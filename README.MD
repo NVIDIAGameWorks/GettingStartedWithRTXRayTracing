@@ -58,16 +58,19 @@ You should be able to unzip the tutorials directory almost anywhere. However, we
 problems with the build scripts if the install directory contains spaces. For now, we suggest 
 avoiding that.
 
-Before compiling, you need to download the other Falcor dependencies. We suggest you do this by
-running the "update_dependencies.bat" in the "Falcor/" directory. It should download a bunch of
-packages and put them in "Falcor/Framework/Externals/" and "Falcor/Media/". The Visual Studio
+Before compiling, _you need to download the other Falcor dependencies_. We suggest you do this by
+running **update_dependencies.bat** in the **Falcor/** directory. It should download a bunch of
+packages and put them in **Falcor/Framework/Externals/** and **Falcor/Media/**. The Visual Studio
 solution will call this script for you via a pre-build step, but it sometimes gives confusing error 
 messages when starting a parallel build.  This is not a problem if you run the script manually.
 
-Open the Visual Studio solution "GettingStartedWithRTXRayTracing.sln", and build.
+Open the Visual Studio solution **GettingStartedWithRTXRayTracing.sln**. We suggest you initially choose
+the "Release" configuration to begin, as programs will start up and run faster. Then "Build | Build Solution"
+to build all the tutorial programs. In the Solution Explorer you right-click and choose "Set as StartUp
+Project" to run that tutorial.
 
 Most tutorials load a default scene (the "modern living room" from Benedikt Bitterli's page).
-We also include one other simple scene in directory "Falcor/Media/Arcade/".  Additional, more complex 
+We also include one other simple scene in directory **Falcor/Media/Arcade/**.  Additional, more complex 
 scenes can be downloaded from the [Open Research Content Archive](https://developer.nvidia.com/orca):
  
    * [Amazon Lumberyard Bistro](https://developer.nvidia.com/orca/amazon-lumberyard-bistro)
@@ -85,8 +88,9 @@ step, and we've seen it in the following cases:
    * You ran a parallel build; our pre-build script gets called for each tutorial and fails 
      on all except the first.  This is usually a one-time error and rebuilding solves the problem.
    * There are installation problems with the dependencies.  Remove the "Falcor/Media/" directory
-     and all subdirectories in the "Falcor/Framework/Externals/" directory and rerun the 
-     "update_dependencies.bat" in the "Falcor/" directory.
+     and all subdirectories in the **Falcor/Framework/Externals/** directory (you can do this with
+	 **delete_dependencies.bat**) and rerun **update_dependencies.bat** in the **Falcor/**
+	 directory.
 
 
 Additional Resources for DirectX Raytracing:
