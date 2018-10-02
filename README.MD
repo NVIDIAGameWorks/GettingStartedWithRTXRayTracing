@@ -2,10 +2,13 @@ Getting Started with RTX Ray Tracing
 ========================================
 
 This directory contains Chris Wyman's shader tutorials from the SIGGRAPH 2018 Course 
-"Introduction to DirectX Raytracing."   Please visit the [course webpage](http://intro-to-dxr.cwyman.org)
+"Introduction to DirectX Raytracing" along with an additional "sphereflake" demo.
+Visit the [course webpage](http://intro-to-dxr.cwyman.org)
 to get more details, more descriptive
 code walkthroughs, some prebuilt tutorial binaries, course presentations, and other information 
 about the course.
+
+![Sphereflake zoom](sphereflake_zoom.jpg)
 
 Please read this document carefully before trying to build our tutorials. Given DirectX 
 Raytracing is not fully finalized and stabilized, building code that relies on it is still
