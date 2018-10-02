@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Passes">
+      <UniqueIdentifier>{8336a679-c276-4c05-8387-97a6c31d5b3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SharedUtils">
+      <UniqueIdentifier>{bc5c51cd-fdc7-496f-bf8b-b3254a077087}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{e31f7ef0-070d-4186-a05d-83d24a5ad6dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CommonPasses">
+      <UniqueIdentifier>{c3250be7-9aac-4acc-b735-f3b94915b932}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\SharedUtils\RenderingPipeline.h">
+      <Filter>SharedUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedUtils\ResourceManager.h">
+      <Filter>SharedUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedUtils\SceneLoaderWrapper.h">
+      <Filter>SharedUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedUtils\SimpleVars.h">
+      <Filter>SharedUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonPasses\SimpleAccumulationPass.h">
+      <Filter>CommonPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonPasses\LightProbeGBufferPass.h">
+      <Filter>CommonPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonPasses\SimpleDiffuseGIPass.h">
+      <Filter>CommonPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CommonPasses\SimpleToneMappingPass.h">
+      <Filter>CommonPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Passes\GGXGlobalIllumination.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedUtils\FullscreenLaunch.h">
+      <Filter>SharedUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedUtils\RayLaunch.h">
+      <Filter>SharedUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedUtils\RenderPass.h">
+      <Filter>SharedUtils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\SharedUtils\RenderingPipeline.cpp">
+      <Filter>SharedUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SharedUtils\ResourceManager.cpp">
+      <Filter>SharedUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SharedUtils\SceneLoaderWrapper.cpp">
+      <Filter>SharedUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SharedUtils\SimpleVars.cpp">
+      <Filter>SharedUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonPasses\SimpleAccumulationPass.cpp">
+      <Filter>CommonPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonPasses\LightProbeGBufferPass.cpp">
+      <Filter>CommonPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CommonPasses\SimpleDiffuseGIPass.cpp">
+      <Filter>CommonPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="Tutor14-GGXGlobalIllumination.cpp" />
+    <ClCompile Include="..\CommonPasses\SimpleToneMappingPass.cpp">
+      <Filter>CommonPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="Passes\GGXGlobalIllumination.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SharedUtils\FullscreenLaunch.cpp">
+      <Filter>SharedUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SharedUtils\RayLaunch.cpp">
+      <Filter>SharedUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SharedUtils\RenderPass.cpp">
+      <Filter>SharedUtils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\Tutorial14\ggxGlobalIlluminationUtils.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Data\Tutorial14\indirectRay.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Data\Tutorial14\standardShadowRay.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Data\Tutorial14\microfacetBRDFUtils.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Data\Tutorial14\ggxGlobalIllumination.rt.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>

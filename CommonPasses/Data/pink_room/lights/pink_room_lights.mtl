@@ -1,0 +1,8 @@
+# MTL written from D:\nhull_dt_research\graphics\media\Main\pink_room\lights\pink_room_lights.obj
+newmtl BrightLight
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ke 10 6 5
+Ks 0 0 0

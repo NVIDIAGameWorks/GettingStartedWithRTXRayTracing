@@ -1,0 +1,17 @@
+# OBJ written from D:\nhull_dt_research\graphics\media\Main\pink_room\lights\pink_room_lights.obj
+# Units	meters
+
+o Light
+v -4.131 0.967976 -4.174
+v -4.879 0.967976 -3.426
+v -4.131 2.03099 -4.174
+v -4.879 2.03099 -3.426
+vn 0.708877 0 0.701806
+vt 0.5 0.666667
+vt 0.25 0.666667
+vt 0.25 0.333333
+vt 0.5 0.333333
+mtllib pink_room_lights.mtl
+usemtl BrightLight
+g Default
+f 3/1/1 4/2/1 2/3/1 1/4/1

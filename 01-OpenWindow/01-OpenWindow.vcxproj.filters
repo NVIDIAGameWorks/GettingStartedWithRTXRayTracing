@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Passes">
+      <UniqueIdentifier>{8336a679-c276-4c05-8387-97a6c31d5b3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SharedUtils">
+      <UniqueIdentifier>{bc5c51cd-fdc7-496f-bf8b-b3254a077087}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Passes\ConstantColorPass.h">
+      <Filter>Passes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedUtils\RenderingPipeline.h">
+      <Filter>SharedUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedUtils\ResourceManager.h">
+      <Filter>SharedUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedUtils\SceneLoaderWrapper.h">
+      <Filter>SharedUtils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedUtils\RenderPass.h">
+      <Filter>SharedUtils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Tutor01-OpenWindow.cpp" />
+    <ClCompile Include="Passes\ConstantColorPass.cpp">
+      <Filter>Passes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SharedUtils\RenderingPipeline.cpp">
+      <Filter>SharedUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SharedUtils\ResourceManager.cpp">
+      <Filter>SharedUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SharedUtils\SceneLoaderWrapper.cpp">
+      <Filter>SharedUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SharedUtils\RenderPass.cpp">
+      <Filter>SharedUtils</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
