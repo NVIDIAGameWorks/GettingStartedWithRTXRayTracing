@@ -95,6 +95,27 @@ step, and we've seen it in the following cases:
 	 **delete_dependencies.bat**) and rerun **update_dependencies.bat** in the **Falcor/**
 	 directory.
 
+Tutorial Information:
+---------------------
+
+Note the UI has a number of features. It is worth hovering your mouse over the "(?)" next to "Keyboard
+Shortcuts" at the top of the menu on the left. "Global Controls" can be viewed by clicking on the small
+arrow to the left of this text.
+
+The mouse orbits (but does not zoom), WASD moves the camera through the scene, along with Q and E for
+down and up. Camera movement can be made slower by holding down "Ctrl" and faster by holding down "Shift."
+
+Each tutorial demonstrates how to implement some basic rendering algorithm. Much of the focus of each is
+the set of shaders in the **Shaders** directory. You are encouraged to modify these shaders and the rest of
+the code as you wish. One nice feature of the [Falcor framework](https://github.com/NVIDIAGameWorks/Falcor)
+is that you can modify and reload the shaders without restarting the program. While focused on the program,
+press F5 and then change the view or toggle some feature that causes a refresh. The new shaders should then
+take effect.
+
+For the two standalone demos, "Ray Tracing In One Weekend" and "Sphereflake," you may wish to modify the
+code named after the demos, in the **Passes** directory of each. For example, **SphereflakeDemoPass.h** lets
+you change how many spheres are generated (we start at 7 for mSizeFactor, but 8 can work on many systems)
+and whether the spheres are shiny or diffuse.
 
 Additional Resources for DirectX Raytracing:
 --------------------------------------------
