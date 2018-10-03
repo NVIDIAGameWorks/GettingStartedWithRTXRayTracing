@@ -98,11 +98,11 @@ step, and we've seen it in the following cases:
 Tutorial Information:
 ---------------------
 
-Note the UI has a number of features. It is worth hovering your mouse over the "(?)" next to "Keyboard
-Shortcuts" at the top of the menu on the left. "Global Controls" can be viewed by clicking on the small
-arrow to the left of this text.
+Note the UI has a number of slightly-hidden features. Hover your mouse over the "(?)" next to "Keyboard
+Shortcuts" at the top of the menu on the left to see some useful key shortcuts. "Global Controls" can be
+viewed by clicking on the small arrow to the left of this text.
 
-The mouse orbits (but does not zoom), WASD moves the camera through the scene, along with Q and E for
+The mouse orbits and WASD moves the camera through the scene, along with Q and E for
 down and up. Camera movement can be made slower by holding down "Ctrl" and faster by holding down "Shift."
 
 Each tutorial demonstrates how to implement some basic rendering algorithm. Much of the focus of each is
