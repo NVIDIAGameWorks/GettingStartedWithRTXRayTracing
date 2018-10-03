@@ -27,8 +27,8 @@ void SphereIntersect()
 	float3 dir = WorldRayDirection();
 
 	// method zero: basic quadratic formula; one: Press' more stable quadratic solution
-	// two: Hearn & Baker/Purgathofer's small spheres intersector. three: Press + Hearn together
-	// four: TODO - I suspect if we don't normalize the direction vector for method 3, we could do better still.
+	// two: Hearn & Baker's small spheres intersector. three: Press + Hearn together
+	// four: use method three, but do not normalize the direction.
 	int method = 3;
 	if (method < 2) {
 
@@ -64,14 +64,13 @@ void SphereIntersect()
 	} else {
 		// Hearn and Baker equation 10-72 for when radius^2 << distance between origin and center
 		// Also at https://www.cg.tuwien.ac.at/courses/EinfVisComp/Slides/SS16/EVC-11%20Ray-Tracing%20Slides.pdf
-		// Assumes ray direction is normalized
-		dir = normalize(dir);
+		// In our particular application we don't need to normalize here, as the direction is already normalized (or distance doesn't matter).
+		// If not normalized, this next line should be uncommented.
+		//dir = normalize(dir);
 		float3 deltap = center - orig;
 		float ddp = dot(dir, deltap);
 		float deltapdot = dot(deltap, deltap);
 
-		// old way, "standard", though it seems to be worse than the methods above
-		//float discriminant = ddp * ddp - deltapdot + radius * radius;
 		float3 remedyTerm = deltap - ddp * dir;
 		float discriminant = radius * radius - dot(remedyTerm, remedyTerm);
 		if (discriminant >= 0.0f)

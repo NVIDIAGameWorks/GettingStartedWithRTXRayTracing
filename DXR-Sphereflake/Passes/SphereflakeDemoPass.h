@@ -31,9 +31,9 @@ protected:
 	// 7: 5,380,841
 	// 8: 48,427,562
 	// 9: 435,848,051 - this won't run, not enough memory
-	int  mSizeFactor = 8;  // depth factor; 8 is stretching it, 9 is too much currently
+	int  mSizeFactor = 7;  // depth factor; 8 is stretching it, 9 is too much currently
 	bool mShiny = true;  // are the spheres shiny or diffuse? 
-	float mGroundSphereRadius = 1000; // largest reasonable is about 100000, tops
+	float mGroundSphereRadius = 1000; // largest reasonable is about 10000, tops
 
 	// Camera parameters
 	// make viewScale higher to move camera position away from scene and zoom in to compensate
