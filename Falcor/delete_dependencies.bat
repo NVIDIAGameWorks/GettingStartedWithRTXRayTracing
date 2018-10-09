@@ -1,2 +1,13 @@
-del /Q .\Framework\Externals\*
-del /Q Media
+rmdir /Q .\Framework\Externals\ASSIMP
+rmdir /Q .\Framework\Externals\dear_imgui
+rmdir /Q .\Framework\Externals\dxcompiler
+rmdir /Q .\Framework\Externals\DXR
+rmdir /Q .\Framework\Externals\FFMPEG
+rmdir /Q .\Framework\Externals\FreeImage
+rmdir /Q .\Framework\Externals\GLFW
+rmdir /Q .\Framework\Externals\GLM
+rmdir /Q .\Framework\Externals\OpenVR
+rmdir /Q .\Framework\Externals\RapidJson
+rmdir /Q .\Framework\Externals\Slang
+rmdir /Q .\Framework\Externals\VulkanSDK
+rmdir /Q Media
