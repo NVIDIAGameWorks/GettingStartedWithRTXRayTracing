@@ -48,6 +48,7 @@ void SphereIntersect()
 			if (method == 0) {
 				// method 0
 				ReportHit((-b - sqrtVal) / (2.0f * a), 0, sphrAttr);
+				// more distant hit - not needed if we know we will intersect with the outside of the sphere
 				ReportHit((-b + sqrtVal) / (2.0f * a), 0, sphrAttr);
 			}
 			else {
@@ -57,8 +58,9 @@ void SphereIntersect()
 				float q = (b >= 0) ? (-0.5*(b + sqrtVal)) : (-0.5*(b - sqrtVal));
 
 				// we don't bother testing for division by zero
-				ReportHit(q / a, 0, sphrAttr);
 				ReportHit(c / q, 0, sphrAttr);
+				// more distant hit - not needed if we know we will intersect with the outside of the sphere
+				ReportHit(q / a, 0, sphrAttr);
 			}
 		}
 	} else {
@@ -80,6 +82,7 @@ void SphereIntersect()
 			if (method == 2) {
 				// method 2
 				ReportHit(ddp - sqrtVal, 0, sphrAttr);
+				// more distant hit - not needed if we know we will intersect with the outside of the sphere
 				ReportHit(ddp + sqrtVal, 0, sphrAttr);
 			}
 			else {
@@ -89,8 +92,9 @@ void SphereIntersect()
 				float q = (ddp >= 0) ? (ddp + sqrtVal) : (ddp - sqrtVal);
 
 				// we don't bother testing for division by zero
-				ReportHit(q, 0, sphrAttr);
 				ReportHit((deltapdot - radius * radius) / q, 0, sphrAttr);
+				// more distant hit - not needed if we know we will intersect with the outside of the sphere
+				ReportHit(q, 0, sphrAttr);
 			}
 		}
 	}
