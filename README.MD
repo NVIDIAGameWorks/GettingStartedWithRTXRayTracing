@@ -51,7 +51,7 @@ Software/Hardware Requirements:
    * When we can build and test on the software fallback layer, we will provide some guidance 
      on required drivers for other hardware.
 7. The Release versions will compile and link with the files in this distribution. To link the Debug versions:
-   * Download http://www.realtimerendering.com/downloads/nvidia/Falcor.lib and put it in the directoryGettingStartedWithRTXRayTracing\Falcor\Framework\Lib\debugdxr.
+   * Download http://www.realtimerendering.com/downloads/nvidia/Falcor.lib and put it in the directory GettingStartedWithRTXRayTracing\Falcor\Framework\Lib\debugdxr.
 
 
 Getting started:
