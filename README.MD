@@ -29,7 +29,7 @@ Software/Hardware Requirements:
 
 1. Windows 10 RS4.
    * If you run "winver.exe" you will need the older **Version 1803** (OS Build 17134).
-   * The tutorials do *not* yet run on versions of Win 10 RS5, e.g., the current version 1808. We hope to update soon.
+   * The tutorials do *not* yet run on versions of Win 10 RS5, e.g., the current version 1809. We hope to update soon.
    * Later releases will run on Win 10 RS5, once I have time to rebuild and test them there.
 2. For now, Windows needs to be in "Developer Mode."
    * Go to "PC Settings" -> "Updates & Security" -> "For developers".
