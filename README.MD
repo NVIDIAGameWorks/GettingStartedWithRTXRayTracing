@@ -28,8 +28,8 @@ Software/Hardware Requirements:
 -------------------------------
 
 1. Windows 10 RS4.
-   * If you run "winver.exe" you should have Version 1803 (OS Build 17134)
-   * The tutorials do *not* yet run on (prerelease) versions of Win 10 RS5.
+   * If you run "winver.exe" you will need the older **Version 1803** (OS Build 17134).
+   * The tutorials do *not* yet run on versions of Win 10 RS5, e.g., the current version 1808. We hope to update soon.
    * Later releases will run on Win 10 RS5, once I have time to rebuild and test them there.
 2. For now, Windows needs to be in "Developer Mode."
    * Go to "PC Settings" -> "Updates & Security" -> "For developers".
@@ -49,7 +49,9 @@ Software/Hardware Requirements:
 6. An NVIDIA driver that natively supports DirectX Raytracing.
    * Includes public drivers after version 396, though we recommend version 400 or later.
    * When we can build and test on the software fallback layer, we will provide some guidance 
-     on required drivers for other hardware. 
+     on required drivers for other hardware.
+7. The Release versions will compile and link with the files in this distribution. To link the Debug versions:
+   * Download http://www.realtimerendering.com/downloads/nvidia/Falcor.lib and put it in the directoryGettingStartedWithRTXRayTracing\Falcor\Framework\Lib\debugdxr.
 
 
 Getting started:
