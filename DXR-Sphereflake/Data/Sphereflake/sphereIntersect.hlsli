@@ -29,7 +29,7 @@ void SphereIntersect()
 	// method zero: basic quadratic formula; one: Press' more stable quadratic solution
 	// two: Hearn & Baker's small spheres intersector. three: Press + Hearn together
 	// four: use method three, but do not normalize the direction.
-	int method = 3;
+	int method = 5;
 	if (method < 2) {
 
 		// Compute a, b, c, for quadratic in ray-sphere intersection
@@ -63,7 +63,8 @@ void SphereIntersect()
 				ReportHit(q / a, 0, sphrAttr);
 			}
 		}
-	} else {
+	}
+	else if (method < 4) {
 		// Hearn and Baker equation 10-72 for when radius^2 << distance between origin and center
 		// Also at https://www.cg.tuwien.ac.at/courses/EinfVisComp/Slides/SS16/EVC-11%20Ray-Tracing%20Slides.pdf
 		// In our particular application we don't need to normalize here, as the direction is already normalized (or distance doesn't matter).
@@ -96,6 +97,96 @@ void SphereIntersect()
 				// more distant hit - not needed if we know we will intersect with the outside of the sphere
 				ReportHit(q, 0, sphrAttr);
 			}
+		}
+	}
+	else if (method == 4) {
+		// Hearn and Baker equation 10-72 for when radius^2 << distance between origin and center
+		// Also at https://www.cg.tuwien.ac.at/courses/EinfVisComp/Slides/SS16/EVC-11%20Ray-Tracing%20Slides.pdf
+		// In our particular application we don't need to normalize here, as the direction is already normalized (or distance doesn't matter).
+		// If not normalized, this next line should be uncommented.
+		//dir = normalize(dir);
+		float3 f = orig - center;
+		float r2 = radius * radius;
+		float a = dot(dir, dir);
+		float b = 2.0f * dot(f, dir);
+		float3 dirnorm = normalize(dir);
+		float3 fd = f - dot(f, dirnorm) * dirnorm;
+		float discriminant = 4.0f * a * (r2 - dot(fd, fd));
+
+		if (discriminant >= 0.0f)
+		{
+			float c = dot(f, f) - r2;
+			float sqrtVal = sqrt(discriminant);
+			SphereAttribs sphrAttr = { center };
+
+			// include Press, William H., Saul A. Teukolsky, William T. Vetterling, and Brian P. Flannery, 
+			// "Numerical Recipes in C," Cambridge University Press, 1992.
+			float q = (b >= 0) ? -0.5f * (b + sqrtVal) : -0.5f * (b - sqrtVal);
+
+			// we don't bother testing for division by zero
+			ReportHit(c / q, 0, sphrAttr);
+			// more distant hit - not needed if we know we will intersect with the outside of the sphere
+			ReportHit(q / a, 0, sphrAttr);
+		}
+	}
+	else if (method == 5) {
+		// get rid of 2.0f and 4.0f and 0.5f factors, etc.
+		// Hearn and Baker equation 10-72 for when radius^2 << distance between origin and center
+		// Also at https://www.cg.tuwien.ac.at/courses/EinfVisComp/Slides/SS16/EVC-11%20Ray-Tracing%20Slides.pdf
+		// In our particular application we don't need to normalize here, as the direction is already normalized (or distance doesn't matter).
+		// If not normalized, this next line should be uncommented.
+		float3 f = orig - center;
+		float r2 = radius * radius;
+		float a = dot(dir, dir);
+		//float b = 2.0f * dot(f, dir);
+		float b2 = dot(f, dir);
+		float3 dirnorm = normalize(dir);
+		float3 fd = f - dot(f, dirnorm) * dirnorm;
+		float discriminant = a * (r2 - dot(fd, fd));
+
+		if (discriminant >= 0.0f)
+		{
+			float c = dot(f, f) - r2;
+			float sqrtVal = sqrt(discriminant);
+			SphereAttribs sphrAttr = { center };
+
+			// include Press, William H., Saul A. Teukolsky, William T. Vetterling, and Brian P. Flannery, 
+			// "Numerical Recipes in C," Cambridge University Press, 1992.
+			float q = (b2 >= 0) ? -sqrtVal - b2 : sqrtVal - b2;
+
+			// we don't bother testing for division by zero
+			ReportHit(c / q, 0, sphrAttr);
+			// more distant hit - not needed if we know we will intersect with the outside of the sphere
+			ReportHit(q / a, 0, sphrAttr);
+		}
+	}
+	else if (method == 6) {
+		// normalized direction
+		// Hearn and Baker equation 10-72 for when radius^2 << distance between origin and center
+		// Also at https://www.cg.tuwien.ac.at/courses/EinfVisComp/Slides/SS16/EVC-11%20Ray-Tracing%20Slides.pdf
+		// In our particular application we don't need to normalize here, as the direction is already normalized (or distance doesn't matter).
+		// If not normalized, this next line should be uncommented.
+		float3 dirnorm = normalize(dir);
+		float3 f = orig - center;
+		float b2 = dot(f, dirnorm);
+		float r2 = radius * radius;
+		float3 fd = f - b2 * dirnorm;
+		float discriminant = r2 - dot(fd, fd);
+
+		if (discriminant >= 0.0f)
+		{
+			float c = dot(f, f) - r2;
+			float sqrtVal = sqrt(discriminant);
+			SphereAttribs sphrAttr = { center };
+
+			// include Press, William H., Saul A. Teukolsky, William T. Vetterling, and Brian P. Flannery, 
+			// "Numerical Recipes in C," Cambridge University Press, 1992.
+			float q = (b2 >= 0) ? -sqrtVal - b2 : sqrtVal - b2;
+
+			// we don't bother testing for division by zero
+			ReportHit(c / q, 0, sphrAttr);
+			// more distant hit - not needed if we know we will intersect with the outside of the sphere
+			ReportHit(q, 0, sphrAttr);
 		}
 	}
 }

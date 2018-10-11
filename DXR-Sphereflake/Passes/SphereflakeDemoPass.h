@@ -33,10 +33,10 @@ protected:
 	// 9: 435,848,051 - this won't run, not enough memory
 	int  mSizeFactor = 7;  // depth factor; 8 is stretching it, 9 is too much currently
 	bool mShiny = true;  // are the spheres shiny or diffuse? 
-	float mGroundSphereRadius = 1000; // largest reasonable is about 10000, tops
+	float mGroundSphereRadius = 1000; // problems seen around 5000 on up
 
 	// Camera parameters
-	// make viewScale higher to move camera position away from scene and zoom in to compensate
+	// make viewScale higher to move camera position away from scene and zoom in to compensate, to test small sphere precision
 	float mViewScale = 1.0f;
 	vec3  mDefaultCameraPos = vec3(mViewScale *4.2f, mViewScale *3.4f, mViewScale *-2.6f);
 	float mDefaultCameraFrameHeight = 15.0f / mViewScale;	// field of view, in mm for frame
