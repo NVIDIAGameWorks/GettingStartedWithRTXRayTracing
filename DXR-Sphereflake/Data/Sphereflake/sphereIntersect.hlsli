@@ -134,7 +134,6 @@ void SphereIntersect()
 		// Hearn and Baker equation 10-72 for when radius^2 << distance between origin and center
 		// Also at https://www.cg.tuwien.ac.at/courses/EinfVisComp/Slides/SS16/EVC-11%20Ray-Tracing%20Slides.pdf
 		// In our particular application we don't need to normalize here, as the direction is already normalized (or distance doesn't matter).
-		// If not normalized, this next line should be uncommented.
 		float3 f = orig - center;
 		float r2 = radius * radius;
 		float a = dot(dir, dir);
@@ -161,16 +160,16 @@ void SphereIntersect()
 		}
 	}
 	else if (method == 6) {
-		// normalized direction
+		// assumed the direction is already normalized
 		// Hearn and Baker equation 10-72 for when radius^2 << distance between origin and center
 		// Also at https://www.cg.tuwien.ac.at/courses/EinfVisComp/Slides/SS16/EVC-11%20Ray-Tracing%20Slides.pdf
 		// In our particular application we don't need to normalize here, as the direction is already normalized (or distance doesn't matter).
 		// If not normalized, this next line should be uncommented.
-		float3 dirnorm = normalize(dir);
+		// dir = normalize(dir);
 		float3 f = orig - center;
-		float b2 = dot(f, dirnorm);
+		float b2 = dot(f, dir);
 		float r2 = radius * radius;
-		float3 fd = f - b2 * dirnorm;
+		float3 fd = f - b2 * dir;
 		float discriminant = r2 - dot(fd, fd);
 
 		if (discriminant >= 0.0f)
