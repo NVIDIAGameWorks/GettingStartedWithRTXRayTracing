@@ -27,6 +27,8 @@ and other resources have their own licenses (see 'Acknowledgments' below).
 Software/Hardware Requirements:
 -------------------------------
 
+0. This code.
+   * If you clone this repository using a command window, please use the standard Windows CMD window, not some Ubuntu shell, etc. For some reason an alternate shell can give the error "c1xx : fatal error C1083: Cannot open source file: '..\SharedUtils\FullscreenLaunch.cpp': No such file or directory" and similar when building the code.
 1. Windows 10 RS4.
    * If you run "winver.exe" you will need the older **Version 1803** (OS Build 17134).
    * The tutorials do *not* yet run on versions of Win 10 RS5, e.g., the current version 1809. We hope to update soon.
@@ -96,6 +98,8 @@ step, and we've seen it in the following cases:
      and all subdirectories in the **Falcor/Framework/Externals/** directory (you can do this with
 	 **delete_dependencies.bat**) and rerun **update_dependencies.bat** in the **Falcor/**
 	 directory.
+
+Visual Studio gives "c1xx : fatal error C1083: Cannot open source file: '..\SharedUtils\FullscreenLaunch.cpp': No such file or directory" or similar when building.  As noted in step 0, cloning the repository with Git under certain shells such as Ubuntu can cause problems with file paths. Use the Windows CMD command prompt, or download the zip.
 
 Tutorial Information:
 ---------------------
