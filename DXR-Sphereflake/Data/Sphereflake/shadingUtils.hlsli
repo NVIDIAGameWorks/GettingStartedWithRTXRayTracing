@@ -96,7 +96,7 @@ float3 shadeDiffuseMaterial(float4 matlData, float3 hit, float3 V, float3 N, ino
 
 		// Shadows: Move a bit along ray towards each light to avoid self-intersection.
 		//     epsilon is relatively high for this scene, because diffuse ground plane is a giant sphere and so has precision problems
-		float eps = 0.0001;
+		float eps = 0.001;
 		// less accurate, but safer, is to use N instead of light1/2/3 for moving the ray's origin, to ensure it is above the surface.
 		isVisible = 0.5f * 
 			( shootShadowRay(hit + N * eps, light1) * saturate(dot(N, light1))
