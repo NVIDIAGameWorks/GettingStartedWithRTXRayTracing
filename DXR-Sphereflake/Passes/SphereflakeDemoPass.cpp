@@ -25,7 +25,7 @@ bool SphereflakeDemo::initialize(RenderContext::SharedPtr pRenderContext, Resour
 	mpRays->addMissShader(kFileRayTrace, "ColorRayMiss");                             // Specify miss shader #0 
 	mpRays->addMissShader(kFileRayTrace, "ShadowRayMiss");                            // Specify miss shader #1
 	mpRays->addHitGroup(kFileRayTrace, "ColorRayClosestHit", "", "SphereIntersect");  // Specify shaders for hit group #0
-	mpRays->setMaxRecursionDepth(17);                                                 // TraceRay internal limit; shaders give a lower limit
+	mpRays->setMaxRecursionDepth(TRACE_RAY_MAX_DEPTH);                                // TraceRay internal limit; shaders give a lower limit
 	mpRays->compileRayProgram();                                                      // Compile our DXR shaders
 	if (mpScene) mpRays->setScene(mpScene);                                           // Tell Falcor what scene we'll be tracing rays into
 
@@ -40,7 +40,7 @@ void SphereflakeDemo::renderGui(Gui* pGui)
 	// Draw the widgets in our GUI.  This uses an immediate mode GUI (i.e., dear_imgui)
 	int dirty = 0;
 	dirty |= (int)pGui->addIntVar("spp / frame", mNumSamples, 1, 16);  
-	dirty |= (int)pGui->addIntVar("ray depth", mMaxDepth, 1, 16);
+	dirty |= (int)pGui->addIntVar("ray depth", mMaxDepth, 1, TRACE_RAY_MAX_DEPTH);
 	dirty |= (int)pGui->addCheckBox(mHemiLight ? "use hemi-light" : "no hemi-light", mHemiLight);
 	if (!mHemiLight) {
 		dirty |= (int)pGui->addFloatVar("light rad.", mAreaLightRadius, 0.0f, 8.0f, 0.005f);
