@@ -27,6 +27,7 @@ float3 shootColorRay(float3 origin, float3 direction, uint curDepth, uint seed)
 	RayDesc ray = { origin, gMinT, direction, 1.0e+38f };
 
 	// Build the payload for our color ray
+	// Note: if when the maximum ray tree depth is reached you want a different color returned other than black, set that here or in ColorRayClosestHit.
 	ColorPayload pay = { float3(0,0,0), curDepth + 1, seed }; 
 
 	// Trace our ray.  Use hit group #0 and miss shader #0.

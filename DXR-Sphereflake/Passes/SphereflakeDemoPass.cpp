@@ -25,6 +25,7 @@ bool SphereflakeDemo::initialize(RenderContext::SharedPtr pRenderContext, Resour
 	mpRays->addMissShader(kFileRayTrace, "ColorRayMiss");                             // Specify miss shader #0 
 	mpRays->addMissShader(kFileRayTrace, "ShadowRayMiss");                            // Specify miss shader #1
 	mpRays->addHitGroup(kFileRayTrace, "ColorRayClosestHit", "", "SphereIntersect");  // Specify shaders for hit group #0
+	mpRays->setMaxRecursionDepth(17);                                                 // TraceRay internal limit; shaders give a lower limit
 	mpRays->compileRayProgram();                                                      // Compile our DXR shaders
 	if (mpScene) mpRays->setScene(mpScene);                                           // Tell Falcor what scene we'll be tracing rays into
 

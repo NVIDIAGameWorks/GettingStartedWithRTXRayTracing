@@ -98,9 +98,15 @@ void ColorRayClosestHit(inout ColorPayload pay, SphereAttribs attribs)
 		pay.color = shadeDiffuseMaterial( matlData, hitPt, rayDir, sphNorm, pay.rngSeed, gAreaLightRadius, gProcTexture, gHemiLight);
 	}
 	// must be metal - sphereflake has no glass
-	else if (!depthExceeded)  // Don't shade metal if we recursed too deep
-	{
-		pay.color = shadeMetalMaterial(matlData, hitPt, rayDir, sphNorm, pay.depth, pay.rngSeed);
+	else {
+		if (!depthExceeded)  // Don't shade metal if we recursed too deep
+		{
+			pay.color = shadeMetalMaterial(matlData, hitPt, rayDir, sphNorm, pay.depth, pay.rngSeed);
+		}
+		else {
+			// depth exceeded - return whatever the default color set in shootColorRay.
+			// Note: if greater than setMaxRecursionDepth for TraceRay, the ray gets set internally to black.
+		}
 	}
 }
 

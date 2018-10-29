@@ -138,7 +138,7 @@ float3 shadeDiffuseMaterial(float4 matlData, float3 hit, float3 V, float3 N, ino
 float3 shadeMetalMaterial(float4 matlData, float3 hit, float3 V, float3 N, uint rayDepth, inout uint randSeed)
 {
 	// Is this surface glossy?  If so, compute a glossy perturbation vector
-	float perturbRadius = frac(saturate(matlData.a - 2.0f));  // Gives 0 if matlData.a <= 2 or matlData >= 3
+	//float perturbRadius = frac(saturate(matlData.a - 2.0f));  // Gives 0 if matlData.a <= 2 or matlData >= 3
 	//float3 perturb      = perturbRadius * float3(nextRand(randSeed), nextRand(randSeed), nextRand(randSeed));
 
 	// Are we applying normal mapping?  Check the material properties and the global UI flag.
