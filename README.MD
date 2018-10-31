@@ -6,7 +6,7 @@ This directory contains Chris Wyman's shader tutorials from the SIGGRAPH 2018 Co
 Visit the [course webpage](http://intro-to-dxr.cwyman.org)
 to get more details, more descriptive
 code walkthroughs, some prebuilt tutorial binaries, course presentations, and other information 
-about the course.
+about the course. The sphereflake demo's features are discussed in [this blog post](https://devblogs.nvidia.com/my-first-ray-tracing-demo/).
 
 ![Sphereflake zoom](sphereflake_zoom.jpg)
 
