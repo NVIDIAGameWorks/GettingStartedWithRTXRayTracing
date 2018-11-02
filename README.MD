@@ -34,7 +34,7 @@ Software/Hardware Requirements:
    * The tutorials do *not* yet run on versions of Win 10 RS5, e.g., the current version 1809. We hope to update soon.
    * Later releases will run on Win 10 RS5, once I have time to rebuild and test them there.
 2. For now, Windows needs to be in "Developer Mode."
-   * Go to "PC Settings" -> "Updates & Security" -> "For developers".
+   * Go to "Settings" -> "Update & Security" -> "For developers".
    * Toggle to "Developer Mode"
 3. Microsoft Visual Studio 2017.
    * The free [Community Edition](https://visualstudio.microsoft.com/downloads/) works fine.
