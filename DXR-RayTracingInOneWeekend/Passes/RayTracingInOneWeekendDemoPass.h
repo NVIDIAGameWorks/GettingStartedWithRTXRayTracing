@@ -6,6 +6,10 @@
 #include "../SharedUtils/RayLaunch.h"    // The simple wrapper layer around DXR launches
 #include <random>
 
+// Internal maximum depth of ray tree, TraceRay itself will immediately return without tracing a ray when reached.
+// Lowering this number can improve performance if shader memory is a bottleneck.
+#define TRACE_RAY_MAX_DEPTH 16
+
 class RayTracingInOneWeekendDemo : public RenderPass, inherit_shared_from_this<RenderPass, RayTracingInOneWeekendDemo>
 {
 public:
