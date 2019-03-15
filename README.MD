@@ -107,11 +107,6 @@ is that you can modify and reload the shaders without restarting the program. Wh
 press F5 and then change the view or toggle some feature that causes a refresh. The new shaders should then
 take effect.
 
-For the two standalone demos, "Ray Tracing In One Weekend" and "Sphereflake," you may wish to modify the
-code named after the demos, in the **Passes** directory of each. For example, **SphereflakeDemoPass.h** lets
-you change how many spheres are generated (we start at 7 for mSizeFactor, but 8 can work on many systems)
-and whether the spheres are shiny or diffuse.
-
 Additional Resources for DirectX Raytracing:
 --------------------------------------------
 
