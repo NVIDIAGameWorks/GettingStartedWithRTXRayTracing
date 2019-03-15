@@ -23,7 +23,7 @@
 
 /** Ray traced ambient occlusion pass.
 */
-class LambertianPlusShadowPass : public RenderPass, inherit_shared_from_this<RenderPass, LambertianPlusShadowPass>
+class LambertianPlusShadowPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, LambertianPlusShadowPass>
 {
 public:
     using SharedPtr = std::shared_ptr<LambertianPlusShadowPass>;
@@ -33,12 +33,12 @@ public:
     virtual ~LambertianPlusShadowPass() = default;
 
 protected:
-	LambertianPlusShadowPass() : RenderPass("Lambertian Plus Shadows", "Lambertian Plus Shadow Options") {}
+	LambertianPlusShadowPass() : ::RenderPass("Lambertian Plus Shadows", "Lambertian Plus Shadow Options") {}
 
     // Implementation of RenderPass interface
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
+    void execute(RenderContext* pRenderContext) override;
 
 	// Override some functions that provide information to the RenderPipeline class
 	bool requiresScene() override { return true; }

@@ -35,11 +35,11 @@ namespace {
 	const char* kEntryIndirectClosestHit = "IndirectClosestHit";
 };
 
-bool GGXGlobalIlluminationPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool GGXGlobalIlluminationPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash a copy of our resource manager so we can get rendering resources
 	mpResManager = pResManager;
-	mpResManager->requestTextureResources({ "WorldPosition", "WorldNormal", "MaterialDiffuse", "MaterialSpecRough", "MaterialExtraParams" });
+	mpResManager->requestTextureResources({ "WorldPosition", "WorldNormal", "MaterialDiffuse", "MaterialSpecRough", "MaterialExtraParams", "Emissive" });
 	mpResManager->requestTextureResource(mOutputTextureName);
 	mpResManager->requestTextureResource(ResourceManager::kEnvironmentMap);
 
@@ -64,7 +64,7 @@ bool GGXGlobalIlluminationPass::initialize(RenderContext::SharedPtr pRenderConte
     return true;
 }
 
-void GGXGlobalIlluminationPass::initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene)
+void GGXGlobalIlluminationPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Stash a copy of the scene and pass it to our ray tracer (if initialized)
     mpScene = std::dynamic_pointer_cast<RtScene>(pScene);
@@ -83,7 +83,7 @@ void GGXGlobalIlluminationPass::renderGui(Gui* pGui)
 }
 
 
-void GGXGlobalIlluminationPass::execute(RenderContext::SharedPtr pRenderContext)
+void GGXGlobalIlluminationPass::execute(RenderContext* pRenderContext)
 {
 	// Get the output buffer we're writing into
 	Texture::SharedPtr pDstTex = mpResManager->getClearedTexture(mOutputTextureName, vec4(0.0f, 0.0f, 0.0f, 0.0f));
@@ -97,12 +97,14 @@ void GGXGlobalIlluminationPass::execute(RenderContext::SharedPtr pRenderContext)
 	globalVars["GlobalCB"]["gFrameCount"]   = mFrameCount++;
 	globalVars["GlobalCB"]["gDoIndirectGI"] = mDoIndirectGI;
 	globalVars["GlobalCB"]["gDoDirectGI"]   = mDoDirectGI;
-	globalVars["GlobalCB"]["gMaxDepth"]     = (uint32_t)mUserSpecifiedRayDepth;
+	globalVars["GlobalCB"]["gMaxDepth"]     = mUserSpecifiedRayDepth;
+    globalVars["GlobalCB"]["gEmitMult"]     = 1.0f;
 	globalVars["gPos"]         = mpResManager->getTexture("WorldPosition");
 	globalVars["gNorm"]        = mpResManager->getTexture("WorldNormal");
 	globalVars["gDiffuseMatl"] = mpResManager->getTexture("MaterialDiffuse");
 	globalVars["gSpecMatl"]    = mpResManager->getTexture("MaterialSpecRough");
 	globalVars["gExtraMatl"]   = mpResManager->getTexture("MaterialExtraParams");
+    globalVars["gEmissive"]    = mpResManager->getTexture("Emissive");
 	globalVars["gOutput"]      = pDstTex;
 	globalVars["gEnvMap"] = mpResManager->getTexture(ResourceManager::kEnvironmentMap);
 

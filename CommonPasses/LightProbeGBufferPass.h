@@ -22,7 +22,7 @@
 #include "../SharedUtils/RayLaunch.h"
 #include <random>
 
-class LightProbeGBufferPass : public RenderPass, inherit_shared_from_this<RenderPass, LightProbeGBufferPass>
+class LightProbeGBufferPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, LightProbeGBufferPass>
 {
 public:
     using SharedPtr = std::shared_ptr<LightProbeGBufferPass>;
@@ -32,13 +32,13 @@ public:
     virtual ~LightProbeGBufferPass() = default;
 
 protected:
-	LightProbeGBufferPass() : RenderPass("G-Buffer With Light Probe", "G-Buffer With Light Probe Options") {}
+	LightProbeGBufferPass() : ::RenderPass("G-Buf With Light Probe", "G-Buffer With Light Probe Options") {}
 
     // Implementation of RenderPass interface
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void execute(RenderContext* pRenderContext) override;
 	void renderGui(Gui* pGui) override;
-	void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) override;
+	void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
 
 	// Override some functions that provide information to the RenderPipeline class
 	bool requiresScene() override      { return true; }

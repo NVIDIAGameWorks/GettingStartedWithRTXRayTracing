@@ -20,15 +20,13 @@
 #include "Falcor.h"
 #include "ResourceManager.h"
 
-using namespace Falcor;
-
 /** Abstract base class for render passes.
 */
-class RenderPass : public std::enable_shared_from_this<RenderPass>
+class RenderPass : public std::enable_shared_from_this<::RenderPass>
 {
 public:
-    using SharedPtr = std::shared_ptr<RenderPass>;
-    using SharedConstPtr = std::shared_ptr<const RenderPass>;
+    using SharedPtr = std::shared_ptr<::RenderPass>;
+    using SharedConstPtr = std::shared_ptr<const ::RenderPass>;
 
     virtual ~RenderPass() = default;
 
@@ -38,14 +36,14 @@ protected:
 	// Interface for derived classes. See description of parameters for the corresponding functions, below, in the public interface.
 	//
 
-	virtual bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) = 0;
-	virtual void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) {}
+	virtual bool initialize(Falcor::RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) = 0;
+	virtual void initScene(Falcor::RenderContext* pRenderContext, Falcor::Scene::SharedPtr pScene) {}
 	virtual void resize(uint32_t width, uint32_t height) {}
 	virtual void pipelineUpdated(ResourceManager::SharedPtr pResManager) { mpResManager = pResManager; }
-	virtual bool processKeyEvent(const KeyboardEvent& keyEvent) { return false; }
-	virtual bool processMouseEvent(const MouseEvent& mouseEvent) { return false; }
-	virtual void renderGui(Gui* pGui) {}
-	virtual void execute(RenderContext::SharedPtr pRenderContext) = 0;
+	virtual bool processKeyEvent(const Falcor::KeyboardEvent& keyEvent) { return false; }
+	virtual bool processMouseEvent(const Falcor::MouseEvent& mouseEvent) { return false; }
+	virtual void renderGui(Falcor::Gui* pGui) {}
+	virtual void execute(Falcor::RenderContext* pRenderContext) = 0;
 	virtual void shutdown() {}
 	virtual void stateRefreshed() {}
 	virtual void activatePass() {}
@@ -74,13 +72,13 @@ public:
 		\param[in] resManager Manager for shared resources between our passes
         \return false if initialization failed, true otherwise.
     */
-    bool onInitialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager);
+    bool onInitialize(Falcor::RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager);
 
     /** Callback on scene initialization.
         \param[in] context Provides the current context to initialize resources for your renderer.
         \param[in] scene Provides the newly loaded scene.
     */
-    void onInitScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) { initScene(pRenderContext, pScene); }
+    void onInitScene(Falcor::RenderContext* pRenderContext, Falcor::Scene::SharedPtr pScene) { initScene(pRenderContext, pScene); }
 
 	/** Callback for when the pipeline state changes.
 	    \param[in] resourceManager Provides the current resource manager, which has some state changed since the last call.
@@ -101,23 +99,23 @@ public:
         \param[in] keyEvent A Falcor structure containing details about the event
         \return true if we process the key event, false if someone else should
     */
-    bool onKeyEvent(const KeyboardEvent& keyEvent) { return processKeyEvent(keyEvent); }
+    bool onKeyEvent(const Falcor::KeyboardEvent& keyEvent) { return processKeyEvent(keyEvent); }
 
     /** Callback executed when processing a mouse event.
         \param[in] mouseEvent A Falcor structure containing details about the event
         \return true if we process the mouse event, false if someone else should
     */
-    bool onMouseEvent(const MouseEvent& mouseEvent) { return processMouseEvent(mouseEvent); }
+    bool onMouseEvent(const Falcor::MouseEvent& mouseEvent) { return processMouseEvent(mouseEvent); }
 
     /** Callback on GUI render.
         \param[in] pGui GUI instance to render UI elements with.
     */
-    void onRenderGui(Gui* pGui);
+    void onRenderGui(Falcor::Gui* pGui);
 
     /** Callback for executing render pass.
         \param[in] context Provides the current context to initialize resources for your renderer
     */
-    void onExecute(RenderContext::SharedPtr pRenderContext);
+    void onExecute(Falcor::RenderContext* pRenderContext);
 
     /** Callback executed when closing the application.
     */
@@ -218,5 +216,5 @@ private:
     bool mRebindFlag = true;                    ///< User flag that is manually reset by calling resetRebindFlag().
 
 protected:
-	ResourceManager::SharedPtr mpResManager;    ///< All passes will need to talk to the resource manager, so will need to stash a copy
+    ResourceManager::SharedPtr mpResManager;    ///< All passes will need to talk to the resource manager, so will need to stash a copy
 };

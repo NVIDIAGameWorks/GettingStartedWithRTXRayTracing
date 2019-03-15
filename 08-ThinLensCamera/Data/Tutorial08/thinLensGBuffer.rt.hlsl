@@ -20,9 +20,9 @@
 #include "HostDeviceSharedMacros.h"
 
 // Include and import common Falcor utilities and data structures
-__import Raytracing;                   // Shared ray tracing specific functions & data
-__import ShaderCommon;                 // Shared shading data structures
-__import Shading;                      // Shading functions, etc  
+import Raytracing;                   // Shared ray tracing specific functions & data
+import ShaderCommon;                 // Shared shading data structures
+import Shading;                      // Shading functions, etc  
 
 // Include utility functions for random numbers & alpha testing
 #include "thinLensUtils.hlsli"
@@ -48,8 +48,8 @@ cbuffer RayGenCB
 void GBufferRayGen()
 {
 	// Get our pixel's position on the screen
-	uint2 launchIndex = DispatchRaysIndex();
-	uint2 launchDim   = DispatchRaysDimensions();
+	uint2 launchIndex = DispatchRaysIndex().xy;
+	uint2 launchDim   = DispatchRaysDimensions().xy;
 
 	// Convert our ray index into a ray direction in world space.  
 	float2 pixelCenter = (launchIndex + gPixelJitter) / launchDim;
@@ -115,12 +115,12 @@ cbuffer MissShaderCB
 void PrimaryMiss(inout SimpleRayPayload hitData)
 {
 	// Store the background color into our diffuse material buffer
-	gMatDif[DispatchRaysIndex()] = float4(gBgColor, 1.0f);
+	gMatDif[DispatchRaysIndex().xy] = float4(gBgColor, 1.0f);
 }
 
 // What code is executed when our ray hits a potentially transparent surface?
 [shader("anyhit")]
-void PrimaryAnyHit(inout SimpleRayPayload hitData, BuiltinIntersectionAttribs attribs)
+void PrimaryAnyHit(inout SimpleRayPayload hitData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Is this a transparent part of the surface?  If so, ignore this hit
 	if (alphaTestFails(attribs))
@@ -129,14 +129,14 @@ void PrimaryAnyHit(inout SimpleRayPayload hitData, BuiltinIntersectionAttribs at
 
 // What code is executed when we have a new closest hitpoint?
 [shader("closesthit")]
-void PrimaryClosestHit(inout SimpleRayPayload rayData,	BuiltinIntersectionAttribs attribs)
+void PrimaryClosestHit(inout SimpleRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Get some information about the current ray
-	uint2  launchIndex = DispatchRaysIndex();
+	uint2  launchIndex = DispatchRaysIndex().xy;
 
 	// Run a pair of Falcor helper functions to compute important data at the current hit point
-	VertexOut  vsOut = getVertexAttributes(PrimitiveIndex(), attribs);          // Get geometrical data
-	ShadingData shadeData = prepareShadingData(vsOut, gMaterial, gCamera.posW); // Get shading data
+	VertexOut  vsOut = getVertexAttributes(PrimitiveIndex(), attribs);             // Get geometrical data
+	ShadingData shadeData = prepareShadingData(vsOut, gMaterial, gCamera.posW, 0); // Get shading data
 
 	// Save out our G-Buffer values to our textures
 	gWsPos[launchIndex] = float4(shadeData.posW, 1.f);

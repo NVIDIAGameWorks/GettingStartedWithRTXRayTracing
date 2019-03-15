@@ -34,7 +34,7 @@ namespace {
 	const float kMSAA[8][2] = { { 1,-3 },{ -1,3 },{ 5,1 },{ -3,-5 },{ -5,5 },{ -7,-1 },{ 3,7 },{ 7,-7 } };
 };
 
-bool ThinLensGBufferPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool ThinLensGBufferPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash a copy of our resource manager so we can get rendering resources
 	mpResManager = pResManager;
@@ -64,7 +64,7 @@ bool ThinLensGBufferPass::initialize(RenderContext::SharedPtr pRenderContext, Re
     return true;
 }
 
-void ThinLensGBufferPass::initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene)
+void ThinLensGBufferPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Stash a copy of the scene and pass it to our ray tracer (if initialized)
 	mpScene = std::dynamic_pointer_cast<RtScene>(pScene);
@@ -106,7 +106,7 @@ void ThinLensGBufferPass::renderGui(Gui* pGui)
 	if (dirty) setRefreshFlag();
 }
 
-void ThinLensGBufferPass::execute(RenderContext::SharedPtr pRenderContext)
+void ThinLensGBufferPass::execute(RenderContext* pRenderContext)
 {
 	// Check that we're ready to render
 	if (!mpRays || !mpRays->readyToRender()) return;

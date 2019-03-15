@@ -26,7 +26,7 @@
 #include "../SharedUtils/RenderPass.h"
 #include "../SharedUtils/FullscreenLaunch.h"
 
-class SimpleAccumulationPass : public RenderPass, inherit_shared_from_this<RenderPass, SimpleAccumulationPass>
+class SimpleAccumulationPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, SimpleAccumulationPass>
 {
 public:
     using SharedPtr = std::shared_ptr<SimpleAccumulationPass>;
@@ -38,9 +38,9 @@ protected:
 	SimpleAccumulationPass(const std::string &bufferToAccumulate);
 
     // Implementation of SimpleRenderPass interface
-	bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-	void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+	bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+	void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
+    void execute(RenderContext* pRenderContext) override;
     void renderGui(Gui* pGui) override;
     void resize(uint32_t width, uint32_t height) override;
 	void stateRefreshed() override;

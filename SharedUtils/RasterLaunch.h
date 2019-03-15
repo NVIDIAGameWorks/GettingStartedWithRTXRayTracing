@@ -66,7 +66,8 @@ public:
 	void setScene(Scene::SharedPtr pScene);
 
 	// Execute the shader.
-	void execute(RenderContext::SharedPtr pRenderContext, GraphicsState::SharedPtr pGfxState, Fbo::SharedPtr pTargetFbo);
+	void execute(RenderContext::SharedPtr pRenderContext, GraphicsState::SharedPtr pGfxState, const Fbo::SharedPtr &pTargetFbo);
+    void execute(RenderContext* pRenderContext, GraphicsState::SharedPtr pGfxState, const Fbo::SharedPtr &pTargetFbo);
 
 	// Want to sent variables to your HLSL code, you do that via the SimpleVars structure
 	SimpleVars::SharedPtr getVars();

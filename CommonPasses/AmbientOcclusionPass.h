@@ -23,7 +23,7 @@
 
 /** Ray traced ambient occlusion pass.
 */
-class AmbientOcclusionPass : public RenderPass, inherit_shared_from_this<RenderPass, AmbientOcclusionPass>
+class AmbientOcclusionPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, AmbientOcclusionPass>
 {
 public:
     using SharedPtr = std::shared_ptr<AmbientOcclusionPass>;
@@ -33,13 +33,13 @@ public:
     virtual ~AmbientOcclusionPass() = default;
 
 protected:
-	AmbientOcclusionPass(const std::string &outBuf) : RenderPass("Ambient Occlusion Rays", "Ambient Occlusion Options") { mOutputTexName = outBuf; }
+	AmbientOcclusionPass(const std::string &outBuf) : ::RenderPass("Ambient Occlusion Rays", "Ambient Occlusion Options") { mOutputTexName = outBuf; }
 
     // Implementation of RenderPass interface
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
     void renderGui(Gui* pGui) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+    void execute(RenderContext* pRenderContext) override;
 
 	// Override some functions that provide information to the RenderPipeline class
 	bool requiresScene() override { return true; }

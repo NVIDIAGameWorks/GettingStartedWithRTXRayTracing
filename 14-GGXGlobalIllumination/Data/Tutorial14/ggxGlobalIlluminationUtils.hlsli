@@ -46,8 +46,10 @@ ShadingData simplePrepareShadingData(VertexOut v, MaterialData m, float3 camPosW
 {
 	ShadingData sd = initShadingData();
 
+    ExplicitLodTextureSampler lodSampler = { 0 };  // Specify the tex lod/mip to use here
+
 	// Sample the diffuse texture and apply the alpha test
-	float4 baseColor = sampleTexture(m.resources.baseColor, m.resources.samplerState, v.texC, m.baseColor, EXTRACT_DIFFUSE_TYPE(m.flags));
+	float4 baseColor = sampleTexture(m.resources.baseColor, m.resources.samplerState, v.texC, m.baseColor, EXTRACT_DIFFUSE_TYPE(m.flags), lodSampler);
 	sd.opacity = m.baseColor.a;
 
 	sd.posW = v.posW;
@@ -58,7 +60,7 @@ ShadingData simplePrepareShadingData(VertexOut v, MaterialData m, float3 camPosW
 	sd.T = normalize(cross(sd.B, sd.N));
 
 	// Sample the spec texture
-	float4 spec = sampleTexture(m.resources.specular, m.resources.samplerState, v.texC, m.specular, EXTRACT_SPECULAR_TYPE(m.flags));
+	float4 spec = sampleTexture(m.resources.specular, m.resources.samplerState, v.texC, m.specular, EXTRACT_SPECULAR_TYPE(m.flags), lodSampler);
 	if (EXTRACT_SHADING_MODEL(m.flags) == ShadingModelMetalRough)
 	{
 		sd.diffuse = lerp(baseColor.rgb, float3(0), spec.b);
@@ -74,11 +76,12 @@ ShadingData simplePrepareShadingData(VertexOut v, MaterialData m, float3 camPosW
 
 	sd.linearRoughness = max(0.08, sd.linearRoughness); // Clamp the roughness so that the BRDF won't explode
 	sd.roughness = sd.linearRoughness * sd.linearRoughness;
-	sd.IoR = m.IoR;
+    sd.emissive = sampleTexture(m.resources.emissive, m.resources.samplerState, v.texC, float4(m.emissive, 1), EXTRACT_EMISSIVE_TYPE(m.flags), lodSampler).rgb;
+    sd.IoR = m.IoR;
 	sd.doubleSidedMaterial = EXTRACT_DOUBLE_SIDED(m.flags);
 
 	// We're not applying normal mapping on 2ndary surfaces; saves quite a bit of cost
-	//applyNormalMap(m, sd);
+	//applyNormalMap(m, sd, lodSampler);
 	sd.NdotV = dot(sd.N, sd.V);
 
 	// Flip the normal if it's backfacing
@@ -93,7 +96,7 @@ ShadingData simplePrepareShadingData(VertexOut v, MaterialData m, float3 camPosW
 
 // Encapsulates a bunch of Falcor stuff into one simpler function. 
 //    -> This can only be called within a closest hit or any hit shader
-ShadingData getHitShadingData( BuiltinIntersectionAttribs attribs, float3 cameraPos )
+ShadingData getHitShadingData(BuiltInTriangleIntersectionAttributes attribs, float3 cameraPos )
 {
 	// Run a pair of Falcor helper functions to compute important data at the current hit point
 	VertexOut  vsOut = getVertexAttributes(PrimitiveIndex(), attribs);
@@ -179,14 +182,15 @@ float3 getCosHemisphereSample(inout uint randSeed, float3 hitNorm)
 // This function tests if the alpha test fails, given the attributes of the current hit. 
 //   -> Can legally be called in a DXR any-hit shader or a DXR closest-hit shader, and 
 //      accesses Falcor helpers and data structures to extract and perform the alpha test.
-bool alphaTestFails(BuiltinIntersectionAttribs attribs)
+bool alphaTestFails(BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Run a Falcor helper to extract the current hit point's geometric data
 	VertexOut  vsOut = getVertexAttributes(PrimitiveIndex(), attribs);
 
-	// Extracts the diffuse color from the material (the alpha component is opacity)
-	float4 baseColor = sampleTexture(gMaterial.resources.baseColor, gMaterial.resources.samplerState,
-		vsOut.texC, gMaterial.baseColor, EXTRACT_DIFFUSE_TYPE(gMaterial.flags));
+    // Extracts the diffuse color from the material (the alpha component is opacity)
+    ExplicitLodTextureSampler lodSampler = { 0 };  // Specify the tex lod/mip to use here
+    float4 baseColor = sampleTexture(gMaterial.resources.baseColor, gMaterial.resources.samplerState,
+        vsOut.texC, gMaterial.baseColor, EXTRACT_DIFFUSE_TYPE(gMaterial.flags), lodSampler);
 
 	// Test if this hit point fails a standard alpha test.  
 	return (baseColor.a < gMaterial.alphaThreshold);

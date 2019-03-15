@@ -18,7 +18,7 @@
 
 #include "ConstantColorPass.h"
 
-bool ConstantColorPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool ConstantColorPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash a copy of our resource manager, allowing us to access shared rendering resources
 	//    We need an output buffer; tell our resource manager we expect the standard output channel
@@ -34,7 +34,7 @@ void ConstantColorPass::renderGui(Gui* pGui)
 	pGui->addFloat3Var("  Color", mConstColor, 0.0f, 1.0f);
 }
 
-void ConstantColorPass::execute(RenderContext::SharedPtr pRenderContext)
+void ConstantColorPass::execute(RenderContext* pRenderContext)
 {
 	// Get a pointer to a Falcor texture resource of our output channel
 	Texture::SharedPtr outTex = mpResManager->getTexture(ResourceManager::kOutputChannel);

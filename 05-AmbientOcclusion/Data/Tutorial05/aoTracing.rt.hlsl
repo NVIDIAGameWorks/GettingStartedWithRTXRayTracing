@@ -73,8 +73,8 @@ float shootAmbientOcclusionRay( float3 orig, float3 dir, float minT, float maxT 
 void AoRayGen()
 {
 	// Where is this thread's ray on screen?
-	uint2 launchIndex = DispatchRaysIndex();
-	uint2 launchDim   = DispatchRaysDimensions();
+	uint2 launchIndex = DispatchRaysIndex().xy;
+	uint2 launchDim   = DispatchRaysDimensions().xy;
 
 	// Initialize a random seed, per-pixel, based on a screen position and temporally varying count
 	uint randSeed = initRand(launchIndex.x + launchIndex.y * launchDim.x, gFrameCount, 16);
@@ -120,7 +120,7 @@ void AoMiss(inout AORayPayload rayData)
 
 // What code is executed when our ray hits a potentially transparent surface?
 [shader("anyhit")]
-void AoAnyHit(inout AORayPayload rayData, BuiltinIntersectionAttribs attribs)
+void AoAnyHit(inout AORayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Is this a transparent part of the surface?  If so, ignore this hit
 	if (alphaTestFails(attribs))

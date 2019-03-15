@@ -30,12 +30,12 @@ SimpleAccumulationPass::SharedPtr SimpleAccumulationPass::create(const std::stri
 }
 
 SimpleAccumulationPass::SimpleAccumulationPass(const std::string &bufferToAccumulate)
-	: RenderPass("Accumulation Pass", "Accumulation Options")
+	: ::RenderPass("Accumulation Pass", "Accumulation Options")
 {
 	mAccumChannel = bufferToAccumulate;
 }
 
-bool SimpleAccumulationPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool SimpleAccumulationPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash our resource manager; ask for the texture the developer asked us to accumulate
 	mpResManager = pResManager;
@@ -50,7 +50,7 @@ bool SimpleAccumulationPass::initialize(RenderContext::SharedPtr pRenderContext,
 	return true;
 }
 
-void SimpleAccumulationPass::initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene)
+void SimpleAccumulationPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Reset accumulation on loading a new scene
 	mAccumCount = 0;
@@ -105,7 +105,7 @@ bool SimpleAccumulationPass::hasCameraMoved()
 		   (mpLastCameraMatrix != mpScene->getActiveCamera()->getViewMatrix());   // Compare the current matrix with the last one
 }
 
-void SimpleAccumulationPass::execute(RenderContext::SharedPtr pRenderContext)
+void SimpleAccumulationPass::execute(RenderContext* pRenderContext)
 {
     // Grab the texture to accumulate
 	Texture::SharedPtr inputTexture = mpResManager->getTexture(mAccumChannel);

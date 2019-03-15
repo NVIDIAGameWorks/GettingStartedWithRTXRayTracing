@@ -18,7 +18,7 @@
 
 #include "CopyToOutputPass.h"
 
-bool CopyToOutputPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool CopyToOutputPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	if (!pResManager) return false;
 
@@ -41,7 +41,7 @@ void CopyToOutputPass::renderGui(Gui* pGui)
 	pGui->addDropdown("Displayed", mDisplayableBuffers, mSelectedBuffer);
 }
 
-void CopyToOutputPass::execute(RenderContext::SharedPtr pRenderContext)
+void CopyToOutputPass::execute(RenderContext* pRenderContext)
 {
 	// Get a pointer to a Falcor texture resource for our output 
 	Texture::SharedPtr outTex = mpResManager->getTexture(ResourceManager::kOutputChannel);

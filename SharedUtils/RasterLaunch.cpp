@@ -104,7 +104,12 @@ void RasterLaunch::createGraphicsVariables()
 	}
 }
 
-void RasterLaunch::execute(RenderContext::SharedPtr pRenderContext, GraphicsState::SharedPtr pGfxState, Fbo::SharedPtr pTargetFbo)
+void RasterLaunch::execute(RenderContext::SharedPtr pRenderContext, GraphicsState::SharedPtr pGfxState, const Fbo::SharedPtr &pTargetFbo)
+{
+    this->execute(pRenderContext.get(), pGfxState, pTargetFbo);
+}
+
+void RasterLaunch::execute(RenderContext* pRenderContext, GraphicsState::SharedPtr pGfxState, const Fbo::SharedPtr &pTargetFbo)
 {
 	// Ok.  We're executing.  If we still have an invalid shader variable reflector, we'd better get one now!
 	if (mInvalidVarReflector) createGraphicsVariables();
@@ -116,7 +121,7 @@ void RasterLaunch::execute(RenderContext::SharedPtr pRenderContext, GraphicsStat
 		pGfxState->setProgram(mpPassShader);
 		pRenderContext->pushGraphicsState(pGfxState);
 		pRenderContext->pushGraphicsVars(mpSharedVars);
-		mpSceneRenderer->renderScene(pRenderContext.get());
+		mpSceneRenderer->renderScene(pRenderContext);
 		pRenderContext->popGraphicsVars();
 		pRenderContext->popGraphicsState();
 	}

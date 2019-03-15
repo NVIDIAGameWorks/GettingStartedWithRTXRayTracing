@@ -55,7 +55,7 @@ void ShadowMiss(inout ShadowRayPayload rayData)
 
 // What code is executed when our ray hits a potentially transparent surface?
 [shader("anyhit")]
-void ShadowAnyHit(inout ShadowRayPayload rayData, BuiltinIntersectionAttribs attribs)
+void ShadowAnyHit(inout ShadowRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Is this a transparent part of the surface?  If so, ignore this hit
 	if (alphaTestFails(attribs))
@@ -64,6 +64,6 @@ void ShadowAnyHit(inout ShadowRayPayload rayData, BuiltinIntersectionAttribs att
 
 // What code is executed when we have a new closest hitpoint?
 [shader("closesthit")]
-void ShadowClosestHit(inout ShadowRayPayload rayData, BuiltinIntersectionAttribs attribs)
+void ShadowClosestHit(inout ShadowRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 }

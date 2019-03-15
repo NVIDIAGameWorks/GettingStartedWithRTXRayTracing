@@ -25,7 +25,7 @@ namespace {
     const char *kGbufFragShader = "Tutorial03\\gBuffer.ps.hlsl";
 };
 
-bool SimpleGBufferPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool SimpleGBufferPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash a copy of our resource manager so we can get rendering resources
 	mpResManager = pResManager;
@@ -51,7 +51,7 @@ bool SimpleGBufferPass::initialize(RenderContext::SharedPtr pRenderContext, Reso
     return true;
 }
 
-void SimpleGBufferPass::initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene)
+void SimpleGBufferPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Stash a copy of the scene
 	if (pScene) 
@@ -62,7 +62,7 @@ void SimpleGBufferPass::initScene(RenderContext::SharedPtr pRenderContext, Scene
 		mpRaster->setScene(mpScene);
 }
 
-void SimpleGBufferPass::execute(RenderContext::SharedPtr pRenderContext)
+void SimpleGBufferPass::execute(RenderContext* pRenderContext)
 {
 	// Create a framebuffer for rendering.  (Creating once per frame is for simplicity, not performance).
 	Fbo::SharedPtr outputFbo = mpResManager->createManagedFbo(

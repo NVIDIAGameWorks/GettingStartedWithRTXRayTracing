@@ -29,7 +29,7 @@ namespace {
 	const char* kEntryAoAnyHit      = "AoAnyHit";
 };
 
-bool AmbientOcclusionPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool AmbientOcclusionPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Keep a copy of our resource manager; request needed buffer resources
 	mpResManager = pResManager;
@@ -49,7 +49,7 @@ bool AmbientOcclusionPass::initialize(RenderContext::SharedPtr pRenderContext, R
     return true;
 }
 
-void AmbientOcclusionPass::initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene)
+void AmbientOcclusionPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Stash a copy of the scene.  To use our DXR wrappers, we currently require a Falcor::RtScene 
 	//    (as Falcor::Scene currently works only for rasterization).  This is a distinction that will 
@@ -77,7 +77,7 @@ void AmbientOcclusionPass::renderGui(Gui* pGui)
 }
 
 
-void AmbientOcclusionPass::execute(RenderContext::SharedPtr pRenderContext)
+void AmbientOcclusionPass::execute(RenderContext* pRenderContext)
 {
 	// Get our output buffer; clear it to black.
 	Texture::SharedPtr pDstTex = mpResManager->getClearedTexture(ResourceManager::kOutputChannel, vec4(0.0f, 0.0f, 0.0f, 0.0f));

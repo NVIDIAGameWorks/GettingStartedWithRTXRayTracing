@@ -30,7 +30,7 @@ namespace {
 	const char* kEntryPrimaryClosestHit = "PrimaryClosestHit";
 };
 
-bool RayTracedGBufferPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool RayTracedGBufferPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash a copy of our resource manager so we can get rendering resources
 	mpResManager = pResManager;
@@ -55,7 +55,7 @@ bool RayTracedGBufferPass::initialize(RenderContext::SharedPtr pRenderContext, R
     return true;
 }
 
-void RayTracedGBufferPass::initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene)
+void RayTracedGBufferPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Stash a copy of the scene.  To use our DXR wrappers, we currently require a Falcor::RtScene 
 	//    (as Falcor::Scene currently works only for rasterization).  This is a distinction that will 
@@ -67,7 +67,7 @@ void RayTracedGBufferPass::initScene(RenderContext::SharedPtr pRenderContext, Sc
 	if (mpRays) mpRays->setScene(mpScene);
 }
 
-void RayTracedGBufferPass::execute(RenderContext::SharedPtr pRenderContext)
+void RayTracedGBufferPass::execute(RenderContext* pRenderContext)
 {
 	// Check that we're ready to render
 	if (!mpRays || !mpRays->readyToRender()) return;

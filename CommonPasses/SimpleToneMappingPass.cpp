@@ -19,11 +19,11 @@
 #include "SimpleToneMappingPass.h"
 
 SimpleToneMappingPass::SimpleToneMappingPass(const std::string &inBuf, const std::string &outBuf)
-	: mInChannel(inBuf), mOutChannel(outBuf), RenderPass("Simple Tone Mapping", "Tone Mapping Options")
+	: mInChannel(inBuf), mOutChannel(outBuf), ::RenderPass("Simple Tone Mapping", "Tone Mapping Options")
 {
 }
 
-bool SimpleToneMappingPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool SimpleToneMappingPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	if (!pResManager) return false;
 
@@ -47,17 +47,17 @@ void SimpleToneMappingPass::renderGui(Gui* pGui)
 	mpToneMapper->renderUI(pGui, nullptr); 
 }
 
-void SimpleToneMappingPass::execute(RenderContext::SharedPtr pRenderContext)
+void SimpleToneMappingPass::execute(RenderContext* pRenderContext)
 {
 	if (!mpResManager) return;
    
 	// Probably should do this once outside the main render loop.
-	Fbo::SharedPtr srcFbo = mpResManager->createManagedFbo({ mInChannel });
-	Fbo::SharedPtr dstFbo = mpResManager->createManagedFbo({ mOutChannel });
+    Texture::SharedPtr srcTex = mpResManager->getTexture( mInChannel );
+	Fbo::SharedPtr dstFbo     = mpResManager->createManagedFbo({ mOutChannel });
 
 	// Execute our tone mapping pass
 	pRenderContext->pushGraphicsState(mpGfxState);
-		mpToneMapper->execute(pRenderContext.get(), srcFbo, dstFbo);
+		mpToneMapper->execute(pRenderContext, srcTex, dstFbo);
 	pRenderContext->popGraphicsState();
 }
 

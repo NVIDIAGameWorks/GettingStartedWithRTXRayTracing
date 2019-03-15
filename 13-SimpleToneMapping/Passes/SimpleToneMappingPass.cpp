@@ -19,11 +19,11 @@
 #include "SimpleToneMappingPass.h"
 
 SimpleToneMappingPass::SimpleToneMappingPass(const std::string &inBuf, const std::string &outBuf)
-	: mInChannel(inBuf), mOutChannel(outBuf), RenderPass("Simple Tone Mapping", "Tone Mapping Options")
+	: mInChannel(inBuf), mOutChannel(outBuf), ::RenderPass("Simple Tone Mapping", "Tone Mapping Options")
 {
 }
 
-bool SimpleToneMappingPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool SimpleToneMappingPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	if (!pResManager) return false;
 
@@ -48,12 +48,12 @@ void SimpleToneMappingPass::renderGui(Gui* pGui)
 	mpToneMapper->renderUI(pGui, nullptr); 
 }
 
-void SimpleToneMappingPass::execute(RenderContext::SharedPtr pRenderContext)
+void SimpleToneMappingPass::execute(RenderContext* pRenderContext)
 {
 	if (!mpResManager) return;
    
 	// Create framebuffer objects for our input & output textures.  
-	Fbo::SharedPtr srcFbo = mpResManager->createManagedFbo({ mInChannel });
+    Texture::SharedPtr srcTex = mpResManager->getTexture(mInChannel);
 	Fbo::SharedPtr dstFbo = mpResManager->createManagedFbo({ mOutChannel });
 
 	// Execute our tone mapping pass.  We do a push/pop rendering state, since
@@ -61,7 +61,7 @@ void SimpleToneMappingPass::execute(RenderContext::SharedPtr pRenderContext)
 	//     state...  Thus we want to use a new, disposible render state rather than 
 	//     risk weird errors in later passes in out pipeline.
 	pRenderContext->pushGraphicsState(mpGfxState);
-		mpToneMapper->execute(pRenderContext.get(), srcFbo, dstFbo);
+		mpToneMapper->execute(pRenderContext, srcTex, dstFbo);
 	pRenderContext->popGraphicsState();
 }
 

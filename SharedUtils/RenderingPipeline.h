@@ -36,26 +36,26 @@ public:
 	\param[in] canAddPassAfter  Should the user be able to insert a new pass immediately after this one?
 	\param[in] canRemovePass  Should the user be able to remove this pass?
 	*/
-	void setPass(uint32_t passNum, RenderPass::SharedPtr pTargetPass, bool canAddPassAfter = false, bool canRemovePass = false);
+	void setPass(uint32_t passNum, ::RenderPass::SharedPtr pTargetPass, bool canAddPassAfter = false, bool canRemovePass = false);
 
 	/** As with setPass(), but allows multiple RenderPass inputs that can be swapped between
 	*/
-	void setPassOptions(uint32_t passNum, std::vector< RenderPass::SharedPtr > pPassList);
+	void setPassOptions(uint32_t passNum, std::vector< ::RenderPass::SharedPtr > pPassList);
 
 
 	/** Add a pass to the list of those selectable to be used in this renderer.  Should occur before Sample::run()!
 	    \param[in] pNewPass Shared pointer to a render pass to be selectable by the yser.
 	    \return An integer identifier specifying location in the internal list of render passes.
 	*/
-	uint32_t addPass(RenderPass::SharedPtr pNewPass);
+	uint32_t addPass(::RenderPass::SharedPtr pNewPass);
 
 	/** To start running the application with this rendering pipeline, call this method
 	*/
 	static void run(RenderingPipeline *pipe, SampleConfig &config);
 
 	// Overloaded methods from MyRenderer
-	virtual void onLoad(SampleCallbacks* pSample, RenderContext::SharedPtr pRenderContext) override;
-	virtual void onFrameRender(SampleCallbacks* pSample, RenderContext::SharedPtr pRenderContext, Fbo::SharedPtr pTargetFbo) override;
+	virtual void onLoad(SampleCallbacks* pSample, const RenderContext::SharedPtr &pRenderContext) override;
+	virtual void onFrameRender(SampleCallbacks* pSample, const RenderContext::SharedPtr &pRenderContext, const Fbo::SharedPtr &pTargetFbo) override;
 	virtual void onShutdown(SampleCallbacks* pSample) override;
 	virtual void onResizeSwapChain(SampleCallbacks* pSample, uint32_t width, uint32_t height) override;
 	virtual void onDataReload(SampleCallbacks* pSample) override {}
@@ -67,11 +67,11 @@ public:
 protected:
 	/** When a new scene is loaded, this gets called to let any passes in this pipeline know there's a new scene.
 	*/
-	void onInitNewScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene);
+	void onInitNewScene(RenderContext* pRenderContext, Scene::SharedPtr pScene);
 
     /** Returns an ordered list of currently active passes without gaps.
     */
-    void getActivePasses(std::vector<RenderPass::SharedPtr>& activePasses) const;
+    void getActivePasses(std::vector<::RenderPass::SharedPtr>& activePasses) const;
 
     /** Returns the last known swap chain size.
     */
@@ -93,14 +93,14 @@ private:
 	void insertPassIntoPipeline(uint32_t afterPass);
 
 	// Do what needs to be done to change the render pass executed in order <passNum> to use the pass in <pNewPass>.
-	void changePass(uint32_t passNum, RenderPass::SharedPtr pNewPass);
+	void changePass(uint32_t passNum, ::RenderPass::SharedPtr pNewPass);
 
 	// Creates a UI dropdown for inserting/changing the pass at order <passNum> in the list of active passes.
 	void createDropdownGuiForPass(uint32_t passNum, Gui::DropdownList& outputList);
 	void createDefaultDropdownGuiForPass(uint32_t passNum, Gui::DropdownList& outputList);
 
 	// Checks if <pCheckPass> is valid to insert at order <passNum> in the list of active passes.
-	bool isPassValid(RenderPass::SharedPtr pCheckPass, uint32_t passNum);
+	bool isPassValid(::RenderPass::SharedPtr pCheckPass, uint32_t passNum);
 
 	// Check if any of the active passes have requested a pipeline change; also resets pass rebind flags.
 	bool anyRequestedPipelineChanges(void);
@@ -117,8 +117,8 @@ private:
 	enum UIOptions { CanRemove = 0x1u, CanAddAfter = 0x2u };
 
 	// Internal state
-	std::vector<RenderPass::SharedPtr> mAvailPasses;        ///< List of all passes available to be selected. List is unordered (or order unimportant).
-	std::vector<RenderPass::SharedPtr> mActivePasses;       ///< Ordered list of currently active passes
+	std::vector<::RenderPass::SharedPtr> mAvailPasses;        ///< List of all passes available to be selected. List is unordered (or order unimportant).
+	std::vector<::RenderPass::SharedPtr> mActivePasses;       ///< Ordered list of currently active passes
 	std::vector< Gui::DropdownList > mPassSelectors;        ///< Ordered list of GUI selectors used to change currently active passes
 	std::vector< uint32_t > mPassId;                        ///< Stores UI variables for currently selected passes.
 	std::vector< bool > mEnablePassGui;                     ///< Stores whether the UI window for each pass is enabled
@@ -127,6 +127,7 @@ private:
 	bool mPipelineChanged = true;                           ///< A flag to keep track of pipeline changes
 	bool mIsInitialized = false;
 	bool mDoProfiling = false;
+    bool mProfileToggle = false;
 	bool mFirstFrame = true;
 	bool mUseSceneCameraPath = false;
 	bool mFreezeTime = true;
@@ -138,7 +139,8 @@ private:
 	GraphicsState::SharedPtr mpDefaultGfxState;
 	std::vector< std::string > mPipeDescription;            ///< Can store a description of the pipeline for display in the UI
 	std::vector< HashedString > mProfileNames;
-	std::vector< float > mProfileGPUTimes;
+	std::vector< double > mProfileGPUTimes;
+    std::vector< double > mProfileLastGPUTimes;
 
 	// Are we storing an environment map?
 	Gui::DropdownList mEnvMapSelector;
@@ -165,4 +167,6 @@ private:
 	Gui::DropdownList mMinTDropdown = { { 0, "0.1" }, { 1, "0.01" }, { 2, "0.001" },{ 3, "1e-4" }, { 4, "1e-5" }, { 5, "1e-6" }, { 6, "1e-7" }, {7, "0"} };
 	float             mMinTArray[8] = { 0.1f, 0.01f, 0.001f, 1e-4f, 1e-5f, 1e-6f, 1e-7f, 0.0f };
 	uint32_t          mMinTSelection = 3;
+
+    std::string mTmpStr = "";
 };

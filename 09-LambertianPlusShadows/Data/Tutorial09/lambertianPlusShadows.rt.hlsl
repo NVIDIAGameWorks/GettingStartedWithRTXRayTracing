@@ -21,10 +21,10 @@
 #include "HostDeviceData.h"           
 
 // Include and import common Falcor utilities and data structures
-__import Raytracing;                   // Shared ray tracing specific functions & data
-__import ShaderCommon;                 // Shared shading data structures
-__import Shading;                      // Shading functions, etc     
-__import Lights;                       // Light structures for our current scene
+import Raytracing;                   // Shared ray tracing specific functions & data
+import ShaderCommon;                 // Shared shading data structures
+import Shading;                      // Shading functions, etc     
+import Lights;                       // Light structures for our current scene
 
 // A separate file with some simple utility functions: getPerpendicularVector(), initRand(), nextRand()
 #include "lambertianPlusShadowsUtils.hlsli"
@@ -74,8 +74,8 @@ float shadowRayVisibility( float3 origin, float3 direction, float minT, float ma
 void LambertShadowsRayGen()
 {
 	// Get our pixel's position on the screen
-	uint2 launchIndex = DispatchRaysIndex();
-	uint2 launchDim   = DispatchRaysDimensions();
+	uint2 launchIndex = DispatchRaysIndex().xy;
+	uint2 launchDim   = DispatchRaysDimensions().xy;
 
 	// Load g-buffer data:  world-space position, normal, and diffuse color
 	float4 worldPos     = gPos[launchIndex];
@@ -131,7 +131,7 @@ void ShadowMiss(inout ShadowRayPayload rayData)
 
 // What code is executed when our ray hits a potentially transparent surface?
 [shader("anyhit")]
-void ShadowAnyHit(inout ShadowRayPayload rayData, BuiltinIntersectionAttribs attribs)
+void ShadowAnyHit(inout ShadowRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Is this a transparent part of the surface?  If so, ignore this hit
 	if (alphaTestFails(attribs))
@@ -140,6 +140,6 @@ void ShadowAnyHit(inout ShadowRayPayload rayData, BuiltinIntersectionAttribs att
 
 // What code is executed when we have a new closest hitpoint?
 [shader("closesthit")]
-void ShadowClosestHit(inout ShadowRayPayload rayData, BuiltinIntersectionAttribs attribs)
+void ShadowClosestHit(inout ShadowRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 }

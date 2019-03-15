@@ -34,6 +34,11 @@ FullscreenLaunch::FullscreenLaunch(const char *fragShader)
 
 void FullscreenLaunch::execute(RenderContext::SharedPtr pRenderContext, GraphicsState::SharedPtr pGfxState)
 {
+    this->execute(pRenderContext.get(), pGfxState);
+}
+
+void FullscreenLaunch::execute(RenderContext* pRenderContext, Falcor::GraphicsState::SharedPtr pGfxState)
+{
 	// Ok.  We're executing.  If we still have an invalid shader variable reflector, we'd better get one now!
 	if (mInvalidVarReflector) createGraphicsVariables();
 
@@ -41,7 +46,7 @@ void FullscreenLaunch::execute(RenderContext::SharedPtr pRenderContext, Graphics
 	{
 		pRenderContext->pushGraphicsState(pGfxState);
 		pRenderContext->pushGraphicsVars(mpVars);
-			mpPass->execute(pRenderContext.get());
+			mpPass->execute(pRenderContext);
 		pRenderContext->popGraphicsVars();
 		pRenderContext->popGraphicsState();
 	}
