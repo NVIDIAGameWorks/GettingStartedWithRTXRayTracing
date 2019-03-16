@@ -40,8 +40,11 @@ Software/Hardware Requirements:
 5. An NVIDIA driver that natively supports DirectX Raytracing.
    * Includes most public drivers version 400 or later.
    * We recommend updating to recent drivers to provide highest performance and stability when ray tracing.
-6. Make sure you get Falcor from (https://github.com/NVIDIAGameWorks/Falcor) and checkout the commit tagged v3.1.
-   * This version of Falcor should reside in the `Falcor/` subdirectory of the samples repository
+6. Make sure you get Falcor from (https://github.com/NVIDIAGameWorks/Falcor) and checkout the commit tagged v3.1 (commit 5a12f298c15b82297447906afafdcf5a2f58f99e). 
+   * The repo should be setup with a submodule to do this automatically.
+   * This version of Falcor should reside in the `Falcor/` subdirectory of the `GettingStartedWithRTXRayTracing` repository.
+   * If compiling gives a bunch of undefined references and cast conversion errors, you have the wrong version of Falcor.
+   * We plan to update these tutorials once more for Falcor 4.0, perhaps including as part of the distribution.
 7. Make sure to build a "ReleaseD3D12" (or "DebugD3D12") version of the samples. 
 
 
