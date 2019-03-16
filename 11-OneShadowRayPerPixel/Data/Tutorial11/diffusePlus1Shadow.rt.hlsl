@@ -21,10 +21,10 @@
 #include "HostDeviceData.h"           
 
 // Include and import common Falcor utilities and data structures
-__import Raytracing;                   // Shared ray tracing specific functions & data
-__import ShaderCommon;                 // Shared shading data structures
-__import Shading;                      // Shading functions, etc     
-__import Lights;                       // Light structures for our current scene
+import Raytracing;                   // Shared ray tracing specific functions & data
+import ShaderCommon;                 // Shared shading data structures
+import Shading;                      // Shading functions, etc     
+import Lights;                       // Light structures for our current scene
 
 // A separate file with some simple utility functions: getPerpendicularVector(), initRand(), nextRand()
 #include "diffusePlus1ShadowUtils.hlsli"
@@ -50,8 +50,8 @@ RWTexture2D<float4> gOutput;        // Output to store shaded result
 void LambertShadowsRayGen()
 {
 	// Get our pixel's position on the screen
-	uint2 launchIndex = DispatchRaysIndex();
-	uint2 launchDim = DispatchRaysDimensions();
+	uint2 launchIndex = DispatchRaysIndex().xy;
+	uint2 launchDim = DispatchRaysDimensions().xy;
 
 	// Load g-buffer data:  world-space position, normal, and diffuse color
 	float4 worldPos = gPos[launchIndex];

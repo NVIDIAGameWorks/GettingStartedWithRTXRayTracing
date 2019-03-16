@@ -25,7 +25,7 @@
 #pragma once
 #include "../SharedUtils/RenderPass.h"
 
-class SimpleToneMappingPass : public RenderPass, inherit_shared_from_this<RenderPass, SimpleToneMappingPass>
+class SimpleToneMappingPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, SimpleToneMappingPass>
 {
 public:
     using SharedPtr = std::shared_ptr<SimpleToneMappingPass>;
@@ -38,8 +38,8 @@ protected:
 	SimpleToneMappingPass(const std::string &inBuf, const std::string &outBuf);
 
     // Implementation of SimpleRenderPass interface
-	bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+	bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void execute(RenderContext* pRenderContext) override;
     void renderGui(Gui* pGui) override;
 
 	// Override some functions that provide information to the RenderPipeline class
@@ -49,5 +49,5 @@ protected:
 	GraphicsState::SharedPtr    mpGfxState;
 	std::string                 mInChannel;         ///< What resource are we expecting as our input?
 	std::string                 mOutChannel;        ///< What resource should we dump our output into?
-	ToneMapping::UniquePtr      mpToneMapper;       ///< Falcor's utility class for tone-mapping.
+	ToneMapping::SharedPtr      mpToneMapper;       ///< Falcor's utility class for tone-mapping.
 };

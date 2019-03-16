@@ -29,7 +29,7 @@ namespace {
 	const float kMSAA[8][2] = { {1,-3}, {-1,3}, {5,1}, {-3,-5}, {-5,5}, {-7,-1}, {3,7}, {7,-7} };
 };
 
-bool JitteredGBufferPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool JitteredGBufferPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash our resource manager; request buffers needed for the pass (see prev. tutorials for detailed comments)
 	mpResManager = pResManager;
@@ -53,7 +53,7 @@ bool JitteredGBufferPass::initialize(RenderContext::SharedPtr pRenderContext, Re
     return true;
 }
 
-void JitteredGBufferPass::initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene)
+void JitteredGBufferPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Stash a copy of the scene.  Update our raster pass wrapper with the scene
 	if (pScene) mpScene = pScene;
@@ -77,7 +77,7 @@ void JitteredGBufferPass::renderGui(Gui* pGui)
 	if (dirty) setRefreshFlag();
 }
 
-void JitteredGBufferPass::execute(RenderContext::SharedPtr pRenderContext)
+void JitteredGBufferPass::execute(RenderContext* pRenderContext)
 {
 	// Create a framebuffer for rendering.  (Creating once per frame is for simplicity, not performance).
 	Fbo::SharedPtr outputFbo = mpResManager->createManagedFbo(

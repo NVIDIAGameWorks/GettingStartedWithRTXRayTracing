@@ -19,9 +19,9 @@
 #include "HostDeviceSharedMacros.h"
 
 // Include and import common Falcor utilities and data structures
-__import Raytracing;
-__import ShaderCommon;
-__import Shading;                      // Shading functions, etc     
+import Raytracing;
+import ShaderCommon;
+import Shading;                      // Shading functions, etc     
 
 // A separate file with some simple utility functions: getPerpendicularVector(), initRand(), nextRand()
 #include "aoCommonUtils.hlsli"
@@ -53,7 +53,7 @@ void AoMiss(inout AORayPayload hitData : SV_RayPayload)
 }
 
 [shader("anyhit")]
-void AoAnyHit(inout AORayPayload rayData : SV_RayPayload, BuiltinIntersectionAttribs attribs : SV_IntersectionAttributes)
+void AoAnyHit(inout AORayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Is this a transparent part of the surface?  If so, ignore this hit
 	if (alphaTestFails(attribs))
@@ -64,7 +64,7 @@ void AoAnyHit(inout AORayPayload rayData : SV_RayPayload, BuiltinIntersectionAtt
 }
 
 [shader("closesthit")]
-void AoClosestHit(inout AORayPayload rayData : SV_RayPayload, BuiltinIntersectionAttribs attribs : SV_IntersectionAttributes)
+void AoClosestHit(inout AORayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	rayData.hitDist = RayTCurrent();
 }
@@ -74,8 +74,8 @@ void AoClosestHit(inout AORayPayload rayData : SV_RayPayload, BuiltinIntersectio
 void AoRayGen()
 {
 	// Where is this ray on screen?
-	uint2 launchIndex = DispatchRaysIndex();
-	uint2 launchDim   = DispatchRaysDimensions();
+	uint2 launchIndex = DispatchRaysIndex().xy;
+	uint2 launchDim   = DispatchRaysDimensions().xy;
 
 	// Initialize random seed per sample based on a screen position and temporally varying count
 	uint randSeed = initRand(launchIndex.x + launchIndex.y * launchDim.x, gFrameCount, 16);

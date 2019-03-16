@@ -23,7 +23,7 @@ namespace {
     const char *kSinusoidShader = "Tutorial02\\sinusoid.ps.hlsl";
 };
 
-bool SinusoidRasterPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool SinusoidRasterPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash a copy of our resource manager, allowing us to access shared rendering resources
 	//    We need an output buffer; tell our resource manager we expect the standard output channel
@@ -45,7 +45,7 @@ void SinusoidRasterPass::renderGui(Gui* pGui)
 	pGui->addFloatVar("Sin multiplier", mScaleValue, 0.0f, 1.0f, 0.00001f, false);
 }
 
-void SinusoidRasterPass::execute(RenderContext::SharedPtr pRenderContext)
+void SinusoidRasterPass::execute(RenderContext* pRenderContext)
 {
 	// Create a framebuffer object to render to.  Done here once per frame for simplicity, not performance.
 	//     This function allows us provide a list of managed texture names, which get combined into an FBO

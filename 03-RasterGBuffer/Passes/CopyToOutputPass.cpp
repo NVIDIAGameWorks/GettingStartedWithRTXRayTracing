@@ -18,7 +18,7 @@
 
 #include "CopyToOutputPass.h"
 
-bool CopyToOutputPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool CopyToOutputPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash a copy of our resource manager, allowing us to access shared rendering resources
 	//    We need an output buffer; tell our resource manager we expect the standard output channel
@@ -36,7 +36,7 @@ void CopyToOutputPass::renderGui(Gui* pGui)
 	pGui->addDropdown("Displayed", mDisplayableBuffers, mSelectedBuffer);
 }
 
-void CopyToOutputPass::execute(RenderContext::SharedPtr pRenderContext)
+void CopyToOutputPass::execute(RenderContext* pRenderContext)
 {
 	// Get a pointer to a Falcor texture resource for our output 
 	Texture::SharedPtr outTex = mpResManager->getTexture(ResourceManager::kOutputChannel);

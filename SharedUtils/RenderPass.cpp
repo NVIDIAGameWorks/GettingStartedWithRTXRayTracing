@@ -19,17 +19,18 @@
 #include "RenderPass.h"
 #include "Externals/dear_imgui/imgui.h"
 
+using namespace Falcor;
 
 // public
 
-bool RenderPass::onInitialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool ::RenderPass::onInitialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
     assert(!mIsInitialized);
 	mIsInitialized = initialize(pRenderContext, pResManager);
     return mIsInitialized;
 }
 
-void RenderPass::onRenderGui(Gui* pGui)
+void ::RenderPass::onRenderGui(Gui* pGui)
 {
     // Record current UI pos/size
     ImVec2 pos = ImGui::GetWindowPos();
@@ -43,13 +44,13 @@ void RenderPass::onRenderGui(Gui* pGui)
     renderGui(pGui);
 }
 
-void RenderPass::onExecute(RenderContext::SharedPtr pRenderContext)
+void ::RenderPass::onExecute(RenderContext* pRenderContext)
 { 
 	mRefreshFlag = false;     // Did come afterwards, but that prevents discovery of a required refresh while rendering
     execute(pRenderContext);
 }
 
-void RenderPass::onShutdown()
+void ::RenderPass::onShutdown()
 {
     // Enforce that onShutdown() is only called once, on successfully initialized passes.
     assert(mIsInitialized);

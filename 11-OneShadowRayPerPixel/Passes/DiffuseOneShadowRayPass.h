@@ -30,7 +30,7 @@
 #include "../SharedUtils/RenderPass.h"
 #include "../SharedUtils/RayLaunch.h"
 
-class DiffuseOneShadowRayPass : public RenderPass, inherit_shared_from_this<RenderPass, DiffuseOneShadowRayPass>
+class DiffuseOneShadowRayPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, DiffuseOneShadowRayPass>
 {
 public:
     using SharedPtr = std::shared_ptr<DiffuseOneShadowRayPass>;
@@ -40,12 +40,12 @@ public:
     virtual ~DiffuseOneShadowRayPass() = default;
 
 protected:
-	DiffuseOneShadowRayPass() : RenderPass("Diffuse + 1 Rand Shadow Ray", "Diffuse + 1 Random Shadow  Options") {}
+	DiffuseOneShadowRayPass() : ::RenderPass("Diffuse + 1 Rand Shadow Ray", "Diffuse + 1 Random Shadow  Options") {}
 
     // Implementation of RenderPass interface
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
+    void execute(RenderContext* pRenderContext) override;
 
 	// Override some functions that provide information to the RenderPipeline class
 	bool requiresScene() override { return true; }

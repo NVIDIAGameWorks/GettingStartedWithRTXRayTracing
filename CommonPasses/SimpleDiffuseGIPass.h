@@ -23,7 +23,7 @@
 
 /** Ray traced ambient occlusion pass.
 */
-class SimpleDiffuseGIPass : public RenderPass, inherit_shared_from_this<RenderPass, SimpleDiffuseGIPass>
+class SimpleDiffuseGIPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, SimpleDiffuseGIPass>
 {
 public:
     using SharedPtr = std::shared_ptr<SimpleDiffuseGIPass>;
@@ -36,9 +36,9 @@ protected:
 	SimpleDiffuseGIPass(const std::string &outBuf);
 
     // Implementation of RenderPass interface
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
+    void execute(RenderContext* pRenderContext) override;
 	void renderGui(Gui* pGui) override;
 
 	// Override some functions that provide information to the RenderPipeline class

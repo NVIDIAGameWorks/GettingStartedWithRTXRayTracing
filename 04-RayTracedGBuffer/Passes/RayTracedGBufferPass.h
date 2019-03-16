@@ -21,7 +21,7 @@
 #include "../SharedUtils/SimpleVars.h"
 #include "../SharedUtils/RayLaunch.h"
 
-class RayTracedGBufferPass : public RenderPass, inherit_shared_from_this<RenderPass, RayTracedGBufferPass>
+class RayTracedGBufferPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, RayTracedGBufferPass>
 {
 public:
     using SharedPtr = std::shared_ptr<RayTracedGBufferPass>;
@@ -30,12 +30,12 @@ public:
     virtual ~RayTracedGBufferPass() = default;
 
 protected:
-	RayTracedGBufferPass() : RenderPass("Ray Traced G-Buffer", "Ray Traced G-Buffer Options") {}
+	RayTracedGBufferPass() : ::RenderPass("Ray Traced G-Buffer", "Ray Traced G-Buffer Options") {}
 
     // Implementation of RenderPass interface
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
-	void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void execute(RenderContext* pRenderContext) override;
+	void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
 
 	// The base RenderPass class defines a number of methods that we can override to 
 	//    specify what properties this pass has.  

@@ -20,7 +20,7 @@
 #include "../SharedUtils/RenderPass.h"
 #include "../SharedUtils/RasterLaunch.h"
 
-class SimpleGBufferPass : public RenderPass, inherit_shared_from_this<RenderPass, SimpleGBufferPass>
+class SimpleGBufferPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, SimpleGBufferPass>
 {
 public:
     using SharedPtr = std::shared_ptr<SimpleGBufferPass>;
@@ -30,12 +30,12 @@ public:
     virtual ~SimpleGBufferPass() = default;
 
 protected:
-	SimpleGBufferPass() : RenderPass("Simple G-Buffer Creation", "Simple G-Buffer Options") {}
+	SimpleGBufferPass() : ::RenderPass("Simple G-Buffer Creation", "Simple G-Buffer Options") {}
 
     // Implementation of RenderPass interface
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
-	void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void execute(RenderContext* pRenderContext) override;
+	void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
 
 	// Override some functions that provide information to the RenderPipeline class
 	bool requiresScene() override     { return true; }

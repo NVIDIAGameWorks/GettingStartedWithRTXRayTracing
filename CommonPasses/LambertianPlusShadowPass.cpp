@@ -29,7 +29,7 @@ namespace {
 	const char* kEntryAoClosestHit = "ShadowClosestHit";
 };
 
-bool LambertianPlusShadowPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool LambertianPlusShadowPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash a copy of our resource manager so we can get rendering resources
 	mpResManager = pResManager;
@@ -53,7 +53,7 @@ bool LambertianPlusShadowPass::initialize(RenderContext::SharedPtr pRenderContex
     return true;
 }
 
-void LambertianPlusShadowPass::initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene)
+void LambertianPlusShadowPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Stash a copy of the scene and pass it to our ray tracer (if initialized)
     mpScene = std::dynamic_pointer_cast<RtScene>(pScene);
@@ -61,7 +61,7 @@ void LambertianPlusShadowPass::initScene(RenderContext::SharedPtr pRenderContext
 	if (mpRays) mpRays->setScene(mpScene);
 }
 
-void LambertianPlusShadowPass::execute(RenderContext::SharedPtr pRenderContext)
+void LambertianPlusShadowPass::execute(RenderContext* pRenderContext)
 {
 	// Get the output buffer we're writing into
 	Texture::SharedPtr pDstTex = mpResManager->getClearedTexture(ResourceManager::kOutputChannel, vec4(0.0f, 0.0f, 0.0f, 0.0f));

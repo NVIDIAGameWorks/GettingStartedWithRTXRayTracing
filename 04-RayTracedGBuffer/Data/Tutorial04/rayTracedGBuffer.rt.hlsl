@@ -38,7 +38,7 @@ void GBufferRayGen()
 	// Convert our ray index into a ray direction in world space.  Grab pixel location, convert to
 	//     normalized device coordiates, then use built-in Falcor variables containing our camera matrix
 	//     to get our world-space ray direction for this pixel.
-	float2 pixelCenter = (DispatchRaysIndex() + float2(0.5f, 0.5f)) / DispatchRaysDimensions(); 
+	float2 pixelCenter = (DispatchRaysIndex().xy + float2(0.5f, 0.5f)) / DispatchRaysDimensions().xy; 
 	float2 ndc = float2(2, -2) * pixelCenter + float2(-1, 1);                    
 	float3 rayDir = ndc.x * gCamera.cameraU + ndc.y * gCamera.cameraV + gCamera.cameraW;  
 
@@ -83,7 +83,7 @@ cbuffer MissShaderCB
 void PrimaryMiss(inout SimpleRayPayload)
 {
 	// Store the background color into our diffuse material buffer
-	gMatDif[DispatchRaysIndex()] = float4(gBgColor, 1.0f);
+	gMatDif[DispatchRaysIndex().xy] = float4(gBgColor, 1.0f);
 }
 
 // Include a simple helper function to do alpha testing (alphaTestFails())
@@ -91,7 +91,7 @@ void PrimaryMiss(inout SimpleRayPayload)
 
 // What code is executed when our ray hits a potentially transparent surface?
 [shader("anyhit")]
-void PrimaryAnyHit(inout SimpleRayPayload, BuiltinIntersectionAttribs attribs)
+void PrimaryAnyHit(inout SimpleRayPayload, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Is this a transparent part of the surface?  If so, ignore this hit
 	if (alphaTestFails(attribs))
@@ -100,10 +100,10 @@ void PrimaryAnyHit(inout SimpleRayPayload, BuiltinIntersectionAttribs attribs)
 
 // What code is executed when we have a new closest hitpoint?
 [shader("closesthit")]
-void PrimaryClosestHit(inout SimpleRayPayload, BuiltinIntersectionAttribs attribs)
+void PrimaryClosestHit(inout SimpleRayPayload, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Which pixel spawned our ray?
-	uint2  launchIndex = DispatchRaysIndex();
+	uint2  launchIndex = DispatchRaysIndex().xy;
 
 	// Run helper function to compute important data at the current hit point
 	ShadingData shadeData = getShadingData( PrimitiveIndex(), attribs );

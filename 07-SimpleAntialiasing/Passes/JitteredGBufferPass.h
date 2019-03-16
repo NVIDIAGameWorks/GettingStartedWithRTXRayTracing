@@ -26,7 +26,7 @@
 #include "../SharedUtils/RasterLaunch.h"
 #include <random>
 
-class JitteredGBufferPass : public RenderPass, inherit_shared_from_this<RenderPass, JitteredGBufferPass>
+class JitteredGBufferPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, JitteredGBufferPass>
 {
 public:
     using SharedPtr = std::shared_ptr<JitteredGBufferPass>;
@@ -35,13 +35,13 @@ public:
     virtual ~JitteredGBufferPass() = default;
 
 protected:
-	JitteredGBufferPass() : RenderPass("Jittered G-Buffer", "Jittered G-Buffer Options") {}
+	JitteredGBufferPass() : ::RenderPass("Jittered G-Buffer", "Jittered G-Buffer Options") {}
 
     // Implementation of RenderPass interface
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void execute(RenderContext* pRenderContext) override;
 	void renderGui(Gui* pGui) override;
-	void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) override;
+	void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
 
 	// The RenderPass class defines various methods we can override to specify this pass' properties. 
 	bool requiresScene() override { return true; }

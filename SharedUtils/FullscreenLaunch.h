@@ -51,6 +51,7 @@ public:
 
 	// Execute the full-screen shader
 	void execute(Falcor::RenderContext::SharedPtr pRenderContext, Falcor::GraphicsState::SharedPtr pGfxState);
+    void execute(Falcor::RenderContext* pRenderContext, Falcor::GraphicsState::SharedPtr pGfxState);
 
 	// Want to send variables to your HLSL code?  You do that via the SimpleVars wrapper
 	SimpleVars::SharedPtr getVars();

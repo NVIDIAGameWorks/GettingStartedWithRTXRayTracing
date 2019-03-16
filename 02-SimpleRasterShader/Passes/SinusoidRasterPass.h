@@ -28,7 +28,7 @@
 #include "../SharedUtils/FullscreenLaunch.h"
 
 
-class SinusoidRasterPass : public RenderPass, inherit_shared_from_this<RenderPass, SinusoidRasterPass>
+class SinusoidRasterPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, SinusoidRasterPass>
 {
 public:
     using SharedPtr = std::shared_ptr<SinusoidRasterPass>;
@@ -37,11 +37,11 @@ public:
     virtual ~SinusoidRasterPass() = default;
 
 protected:
-	SinusoidRasterPass() : RenderPass("Simple Sinusoid (Raster)", "Raster Sinusoid Options") {}
+	SinusoidRasterPass() : ::RenderPass("Simple Sinusoid (Raster)", "Raster Sinusoid Options") {}
 
     // Implementation of RenderPass interface
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void execute(RenderContext* pRenderContext) override;
     void renderGui(Gui* pGui) override;
 
 	// The base RenderPass class defines a number of methods that we can override to specify

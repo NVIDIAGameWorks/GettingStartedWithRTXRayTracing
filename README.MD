@@ -1,20 +1,17 @@
 Getting Started with RTX Ray Tracing
 ========================================
 
-This directory contains Chris Wyman's shader tutorials from the SIGGRAPH 2018 Course 
-"Introduction to DirectX Raytracing" along with an additional "sphereflake" demo.
-Visit the [course webpage](http://intro-to-dxr.cwyman.org)
-to get more details, more descriptive
-code walkthroughs, some prebuilt tutorial binaries, course presentations, and other information 
-about the course. The sphereflake demo's features are discussed in [this blog post](https://devblogs.nvidia.com/my-first-ray-tracing-demo/).
-
-![Sphereflake zoom](sphereflake_zoom.jpg)
+This directory contains Chris Wyman's shader tutorials from the GDC 2019 and SIGGRAPH 2018 
+courses "Introduction to DirectX Raytracing".  Visit the [SIGGRAPH course webpage](http://intro-to-dxr.cwyman.org)
+to get more details, more descriptive code walkthroughs, some prebuilt tutorial binaries, 
+course presentations, and other information about the course. 
 
 Please read this document carefully before trying to build our tutorials. Given DirectX 
-Raytracing is not fully finalized and stabilized, building code that relies on it is still
-somewhat complex and can fail in surprising ways. We have tried to specify all requirements
+Raytracing is new, building code that relies on it can easily break in surprising ways
+if you do not have the latest requirements.  We have tried to specify all requirements
 and caveats, to avoid pain in getting started, and we will update this tutorial code as 
-requirements change. Please contact us or [log an issue](https://github.com/NVIDIAGameWorks/GettingStartedWithRTXRayTracing/issues) if you run into unexpected troubles not covered below.
+requirements change. Please contact us or [log an issue](https://github.com/NVIDIAGameWorks/GettingStartedWithRTXRayTracing/issues) 
+if you run into unexpected troubles not covered below.
 
 Also note: None of the tutorial examples are intended to demonstrate best practices for
 highly optimized performance. These samples are optimized to provide an easy starting point, 
@@ -29,31 +26,26 @@ Software/Hardware Requirements:
 
 0. This code.
    * If you clone this repository using a command window, please use the standard Windows CMD window, not a Linux shell, which can alter the CR/LF in project files and make them fail with errors such as "c1xx : fatal error C1083: Cannot open source file: '..\SharedUtils\FullscreenLaunch.cpp': No such file or directory" and similar when building the code.
-1. Windows 10 RS4.
-   * If you run "winver.exe" you will need the older **Version 1803** (OS Build 17134).
-   * The tutorials do *not* yet run on versions of Win 10 RS5, e.g., the current version 1809. We hope to update soon.
-   * Later releases will run on Win 10 RS5, once I have time to rebuild and test them there.
-2. For now, Windows needs to be in "Developer Mode."
-   * Go to "Settings" -> "Update & Security" -> "For developers".
-   * Toggle to "Developer Mode"
-3. Microsoft Visual Studio 2017.
+1. Windows 10 RS5.
+   * If you run "winver.exe" you should see **Version 1809** (OS Build 17763) or later.
+   * See older versions of this repository for unsupported code that runs on RS4 (v1803).
+2. Microsoft Visual Studio 2017.
    * The free [Community Edition](https://visualstudio.microsoft.com/downloads/) works fine.
-4. Windows 10 SDK 10.0.16299.91.
+3. Windows 10 SDK 10.0.17763.0 (aka Windows 10 SDK, version 1809).
    * [Download SDK](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)
-   * Note: Later SDK versions *probably* work, but you would need to change each Visual Studio project
-     to look for the SDK you download, rather than 10.0.16299.91.  (Do this
-     under Project -> Properties -> Config Properties -> General -> Window SDK Version)
-5. A graphics card supporting DirectX Raytracing.
+   * Note: Later SDK versions *probably* work, but you need to change each Visual Studio project
+     to look for the SDK you download, rather than 10.0.17763.0.  
+4. A graphics card supporting DirectX Raytracing.
    * Currently, limited to newer NVIDIA cards, e.g., [Titan V](https://www.nvidia.com/en-us/titan/titan-v/) and [Turing-class cards](https://www.nvidia.com/en-us/geforce/turing/).
-   * Eventually, the tutorials should work via the software fallback.  They don't yet.
-     I expect after moving to Windows 10 RS5, the software fallback will be easier to link
-     to simultaneously with vendor-supported DXR drivers.
-6. An NVIDIA driver that natively supports DirectX Raytracing.
-   * Includes public drivers after version 396, though we recommend version 400 or later.
-   * When we can build and test on the software fallback layer, we will provide some guidance 
-     on required drivers for other hardware.
-7. The Release versions will compile and link with the files in this distribution. To link the Debug versions:
-   * Download http://www.realtimerendering.com/downloads/nvidia/Falcor.lib and put it in the directory GettingStartedWithRTXRayTracing\Falcor\Framework\Lib\debugdxr.
+5. An NVIDIA driver that natively supports DirectX Raytracing.
+   * Includes most public drivers version 400 or later.
+   * We recommend updating to recent drivers to provide highest performance and stability when ray tracing.
+6. Make sure you get Falcor from (https://github.com/NVIDIAGameWorks/Falcor) and checkout the commit tagged v3.1 (commit 5a12f298c15b82297447906afafdcf5a2f58f99e). 
+   * The repo should be setup with a submodule to do this automatically.
+   * This version of Falcor should reside in the `Falcor/` subdirectory of the `GettingStartedWithRTXRayTracing` repository.
+   * If compiling gives a bunch of undefined references and cast conversion errors, you have the wrong version of Falcor.
+   * We plan to update these tutorials once more for Falcor 4.0, perhaps including as part of the distribution.
+7. Make sure to build a "ReleaseD3D12" (or "DebugD3D12") version of the samples. 
 
 
 Getting started:
@@ -61,7 +53,7 @@ Getting started:
 
 Satisfying the requirements above, you're ready to get started.  
 
-You should be able to unzip the tutorials directory almost anywhere. However, we have run into 
+You should be able to install the tutorials directory almost anywhere. However, we have run into 
 problems with the build scripts if the install directory contains spaces. For now, we suggest 
 avoiding that.
 
@@ -72,7 +64,7 @@ solution will call this script for you via a pre-build step, but it sometimes gi
 messages when starting a parallel build.  This is not a problem if you run the script manually.
 
 Open the Visual Studio solution **GettingStartedWithRTXRayTracing.sln**. We suggest you initially choose
-the "Release" configuration to begin, as programs will start up and run faster. Then "Build | Build Solution"
+the "ReleaseD3D12" configuration to begin, as programs will start up and run faster. Then "Build | Build Solution"
 to build all the tutorial programs. In the Solution Explorer you right-click and choose "Set as StartUp
 Project" to run that tutorial.
 
@@ -117,11 +109,6 @@ the code as you wish. One nice feature of the [Falcor framework](https://github.
 is that you can modify and reload the shaders without restarting the program. While focused on the program,
 press F5 and then change the view or toggle some feature that causes a refresh. The new shaders should then
 take effect.
-
-For the two standalone demos, "Ray Tracing In One Weekend" and "Sphereflake," you may wish to modify the
-code named after the demos, in the **Passes** directory of each. For example, **SphereflakeDemoPass.h** lets
-you change how many spheres are generated (we start at 7 for mSizeFactor, but 8 can work on many systems)
-and whether the spheres are shiny or diffuse.
 
 Additional Resources for DirectX Raytracing:
 --------------------------------------------

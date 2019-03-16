@@ -33,14 +33,14 @@ RenderingPipeline::RenderingPipeline()
 {
 }
 
-uint32_t RenderingPipeline::addPass(RenderPass::SharedPtr pNewPass)
+uint32_t RenderingPipeline::addPass(::RenderPass::SharedPtr pNewPass)
 {
 	size_t id = mAvailPasses.size();
 	mAvailPasses.push_back(pNewPass);
 	return uint32_t(id);
 }
 
-void RenderingPipeline::onLoad(SampleCallbacks* pSample, RenderContext::SharedPtr pRenderContext)
+void RenderingPipeline::onLoad(SampleCallbacks* pSample, const RenderContext::SharedPtr &pRenderContext)
 {
 	// Give the GUI some heft, so we don't need to resize all the time
 	pSample->setDefaultGuiSize(300, 800);
@@ -55,7 +55,7 @@ void RenderingPipeline::onLoad(SampleCallbacks* pSample, RenderContext::SharedPt
 		if (mAvailPasses[i])
 		{
 			// Initialize.  If failure, remove this pass from the list.
-			bool initialized = mAvailPasses[i]->onInitialize(pRenderContext, mpResourceManager);
+			bool initialized = mAvailPasses[i]->onInitialize(pRenderContext.get(), mpResourceManager);
 			if (!initialized) mAvailPasses[i] = nullptr;
 		}
 	}
@@ -74,6 +74,8 @@ void RenderingPipeline::onLoad(SampleCallbacks* pSample, RenderContext::SharedPt
     }
 
 	// Create identifiers for profiling.
+    mProfileGPUTimes.resize(mActivePasses.size() * 2);
+    mProfileLastGPUTimes.resize(mActivePasses.size() * 2);
 	for (uint32_t i = 0; i < mActivePasses.size()*2; i++)
 	{
 		char buf[256];
@@ -105,12 +107,11 @@ void RenderingPipeline::onLoad(SampleCallbacks* pSample, RenderContext::SharedPt
 		mEnvMapSelector.push_back({ 1, "< Load new map... >" });
 		mEnvMapSelector.push_back({ 2, "Switch -> black environment"  });
 		mEnvMapSelector.push_back({ 3, "Switch -> sky blue environment" });
-		mEnvMapSelector.push_back({ 4, "Switch -> Carolina sky blue environment" });
 
 		if(findFileInDataDirectories("MonValley_G_DirtRoad_3k.hdr", mMonValleyFilename))
 		{
 			mHasMonValley = true;
-			mEnvMapSelector.push_back({ 5, "Switch -> desert HDR environment" });
+			mEnvMapSelector.push_back({ 4, "Switch -> desert HDR environment" });
 		}
 
 	}
@@ -204,7 +205,7 @@ void RenderingPipeline::createDefaultDropdownGuiForPass(uint32_t passOrder, Gui:
 }
 
 // Returns true if pCheckPass is valid to insert in the pass sequence at location <passNum>
-bool RenderingPipeline::isPassValid(RenderPass::SharedPtr pCheckPass, uint32_t passNum)
+bool RenderingPipeline::isPassValid(::RenderPass::SharedPtr pCheckPass, uint32_t passNum)
 {
 	// For now, say that all passes can be inserted everywhere...
 	return true;
@@ -212,6 +213,8 @@ bool RenderingPipeline::isPassValid(RenderPass::SharedPtr pCheckPass, uint32_t p
 
 void RenderingPipeline::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
 {
+    //Falcor::ProfilerEvent _profileEvent("renderGUI");
+
 	pGui->addSeparator();
 
 	// Add a button to allow the user to load a scene
@@ -228,7 +231,7 @@ void RenderingPipeline::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
 			// We have a method that explicitly initializes all render passes given our new scene.
 			if (loadedScene)
 			{
-				onInitNewScene(pSample->getRenderContext(), loadedScene);
+				onInitNewScene(pSample->getRenderContext().get(), loadedScene);
 				mGlobalPipeRefresh = true;
 			}
 		}
@@ -262,13 +265,7 @@ void RenderingPipeline::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
 				mpResourceManager->updateEnvironmentMap("");
 				mEnvMapSelector[0] = { 0, "Sky blue (i.e., [0.5, 0.5, 0.8])" };
 			}
-			else if (selection == 4)  // select default "black" environment
-			{
-				// Choose the black background
-				mpResourceManager->updateEnvironmentMap("Carolina sky blue");
-				mEnvMapSelector[0] = { 0, "Carolina sky blue (i.e., [0.078, 0.361, 0.753])" };
-			}
-			else if (selection == 5)
+			else if (selection == 4)
 			{
 				mEnvMapSelector[0] = { 0, "Desert HDR environment" };
 				mpResourceManager->updateEnvironmentMap(mMonValleyFilename);
@@ -322,18 +319,8 @@ void RenderingPipeline::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
 		sprintf_s(buf, "##selector.pass.%d", i);
 		if (pGui->addDropdown(buf, mPassSelectors[i], mPassId[i], true))
 		{
-			RenderPass::SharedPtr selectedPass = (mPassId[i] != kNullPassId) ? mAvailPasses[mPassId[i]] : nullptr;
+			::RenderPass::SharedPtr selectedPass = (mPassId[i] != kNullPassId) ? mAvailPasses[mPassId[i]] : nullptr;
 			changePass(i, selectedPass);
-		}
-
-		if (mDoProfiling)
-		{
-			if (i < mProfileGPUTimes.size())
-			{
-				char buf[256];
-				sprintf_s(buf, "%.2f ms", mProfileGPUTimes[i]);
-				pGui->addText(buf, true);
-			}
 		}
 
 		// If the GUI for this pass is enabled, go ahead and draw the GUI
@@ -352,12 +339,8 @@ void RenderingPipeline::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
 			guiPos.y += yGuiOffset; 
 			guiPos.y = glm::min(guiPos.y, int(mLastKnownSize.y) - 100);
 
-			// Create a window.  Not using Falcor wrapper to allow passing NoFocusOnAppearing flag.
-			ImVec2 pos{ float(guiPos.x), float(guiPos.y) };
-			ImVec2 size{ float(guiSz.x), float(guiSz.y) };
-			ImGui::SetNextWindowSize(size, ImGuiSetCond_FirstUseEver);
-			ImGui::SetNextWindowPos(pos, ImGuiSetCond_FirstUseEver);
-			ImGui::Begin(mActivePasses[i]->getGuiName().c_str(), nullptr, ImGuiWindowFlags_NoFocusOnAppearing);
+			// Create a window.  Note: RS4 version does more; that doesn't work with recent Falcor; this is OK for just tutorials.
+            pGui->pushWindow(mActivePasses[i]->getGuiName().c_str(),guiSz.x, guiSz.y, guiPos.x, guiPos.y, true, true);
 
 			// Render the pass' GUI to this new UI window, then pop the new UI window.
 			mActivePasses[i]->onRenderGui(pGui);
@@ -370,7 +353,6 @@ void RenderingPipeline::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
 	}
 
 	pGui->addText("");
-	pGui->addCheckBox("Profile performance?", mDoProfiling);
 
 	// Enable an option to enable/disable binding of the camera to a path
 	if (mpScene && mpScene->getPathCount() && mPipeHasAnimation)
@@ -397,6 +379,10 @@ void RenderingPipeline::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
 		}
 	}
 
+    pGui->addText("");
+    pGui->addSeparator();
+    pGui->addText(Falcor::gProfileEnabled ? "Press (P):  Hide profiling window" : "Press (P):  Show profiling window");
+    pGui->addSeparator();
 }
 
 void RenderingPipeline::removePassFromPipeline(uint32_t passNum)
@@ -432,7 +418,7 @@ void RenderingPipeline::removePassFromPipeline(uint32_t passNum)
 	mPipelineChanged = true;
 }
 
-void RenderingPipeline::setPass(uint32_t passNum, RenderPass::SharedPtr pTargetPass, bool canAddPassAfter, bool canRemovePass)
+void RenderingPipeline::setPass(uint32_t passNum, ::RenderPass::SharedPtr pTargetPass, bool canAddPassAfter, bool canRemovePass)
 {
     // If we're setting pass after last pass in the list, insert null passes so that all slots are valid.
     for (uint32_t i = (uint32_t)mPassId.size(); i <= passNum; i++)
@@ -484,7 +470,7 @@ void RenderingPipeline::setPass(uint32_t passNum, RenderPass::SharedPtr pTargetP
 	mPipelineChanged = true;
 }
 
-void RenderingPipeline::setPassOptions(uint32_t passNum, std::vector<RenderPass::SharedPtr> pPassList)
+void RenderingPipeline::setPassOptions(uint32_t passNum, std::vector<::RenderPass::SharedPtr> pPassList)
 {
 	// If we're setting pass after last pass in the list, insert null passes so that all slots are valid.
 	for (uint32_t i = (uint32_t)mPassId.size(); i <= passNum; i++)
@@ -568,7 +554,7 @@ void RenderingPipeline::insertPassIntoPipeline(uint32_t afterPass)
 	}
 }
 
-void RenderingPipeline::changePass(uint32_t passNum, RenderPass::SharedPtr pNewPass)
+void RenderingPipeline::changePass(uint32_t passNum, ::RenderPass::SharedPtr pNewPass)
 {
     // Early out if the new pass is the same as the old pass.
     if (mActivePasses[passNum] && mActivePasses[passNum] == pNewPass)
@@ -616,28 +602,16 @@ void RenderingPipeline::onFirstRun(SampleCallbacks* pSample)
 	if (mPipeNeedsDefaultScene)
 	{
 		RtScene::SharedPtr loadedScene = loadScene(mLastKnownSize, mpResourceManager->getDefaultSceneName().c_str());
-		if (loadedScene) onInitNewScene(pSample->getRenderContext(), loadedScene);
+		if (loadedScene) onInitNewScene(pSample->getRenderContext().get(), loadedScene);
 	}
 
 	mFirstFrame = false;
 }
 
-void RenderingPipeline::onFrameRender(SampleCallbacks* pSample, RenderContext::SharedPtr pRenderContext, Fbo::SharedPtr pTargetFbo)
+void RenderingPipeline::onFrameRender(SampleCallbacks* pSample, const RenderContext::SharedPtr &pRenderContext, const Fbo::SharedPtr &pTargetFbo)
 {
 	// Is this the first time we've run onFrameRender()?  If som take care of things that happen on first execution.
 	if (mFirstFrame) onFirstRun(pSample);
-
-	// We're taking over control of profiling from Falcor.  If profiling stage has been 
-	//    toggled (i.e., gProfileEnabled == true at this point), then toggle our internal
-	//    profiling state
-	if (Falcor::gProfileEnabled)
-	{
-		mDoProfiling = !mDoProfiling;
-	}
-
-	// We need gProfileEnabled to be the value of mDoProfiling during onFrameRender() in 
-	//    order to correctly do profiling.
-	Falcor::gProfileEnabled = mDoProfiling;
 
 	// Bind our default state to the graphics pipe
 	pRenderContext->pushGraphicsState(mpDefaultGfxState);
@@ -693,13 +667,17 @@ void RenderingPipeline::onFrameRender(SampleCallbacks* pSample, RenderContext::S
     {
         if (mActivePasses[passNum])
         {
-			// Insert a per-pass profiling event.  
-			// TODO:  This may need fixing, since the names are dumb, and I haven't guaranteed I have enough names
-			//        if the user truly tinkers around arbitrarily with the rendering pipeline.  (Should be OK in most simple scenarios).
-			assert(passNum < mProfileNames.size());
-			Falcor::ProfilerEvent _profileEvent( mProfileNames[passNum] );
-
-			mActivePasses[passNum]->onExecute(pRenderContext);
+            if (Falcor::gProfileEnabled)
+            {
+                // Insert a per-pass profiling event.  
+                assert(passNum < mProfileNames.size());
+                Falcor::ProfilerEvent _profileEvent(mActivePasses[passNum]->getName().c_str());
+                mActivePasses[passNum]->onExecute(pRenderContext.get());
+            }
+            else
+            {
+                mActivePasses[passNum]->onExecute(pRenderContext.get());
+            }
         }
     }
 
@@ -714,18 +692,9 @@ void RenderingPipeline::onFrameRender(SampleCallbacks* pSample, RenderContext::S
 
 	// Get rid of our default state
 	pRenderContext->popGraphicsState();
-
-	// If we enabled profiling, extract that info here
-	if (mDoProfiling)
-	{
-		extractProfilingData();
-	}
-
-	// Since we're taking over profiling from Falcor classes, tell Falcor that profiling is disabled
-	Falcor::gProfileEnabled = false;
 }
 
-void RenderingPipeline::onInitNewScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene)
+void RenderingPipeline::onInitNewScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Stash the scene in the pipeline
 	if (pScene) 
@@ -822,7 +791,7 @@ bool RenderingPipeline::canAddPassAfter(uint32_t passNum)
 	return (mEnableAddRemove[passNum] & UIOptions::CanAddAfter) != 0x0u;
 }
 
-void RenderingPipeline::getActivePasses(std::vector<RenderPass::SharedPtr>& activePasses) const
+void RenderingPipeline::getActivePasses(std::vector<::RenderPass::SharedPtr>& activePasses) const
 {
     activePasses.clear();
     for (auto& pPass : mActivePasses)
@@ -885,20 +854,14 @@ void RenderingPipeline::extractProfilingData(void)
 	//    this will need updating.
 
 	// Get our Falcor profiler string
-	std::string profileMsg;
-	Profiler::endFrame(profileMsg);
-
-	// Allocate space in our vector for each of our passes to store a time
-	mProfileGPUTimes.resize(mActivePasses.size()+10);
-
-	// The first line is a header.  Ignore it.  No useful data.
-	size_t endOfLine = profileMsg.find('\n');
-	profileMsg = profileMsg.substr(endOfLine+1);
+	std::string profileMsg = Profiler::getEventsString();
+    mTmpStr = profileMsg;
 
 	// Grab all of the lines with profiling data
 	int findPass = 0;
 	int count = 1;
-	endOfLine = profileMsg.find('\n');
+
+	size_t endOfLine = profileMsg.find('\n');
 	while (endOfLine != std::string::npos && findPass < mActivePasses.size())
 	{
 		// Each RenderPass is profiled with the name "Pass_%d" where %d various from 0 to (#passes-1)
@@ -917,12 +880,11 @@ void RenderingPipeline::extractProfilingData(void)
 		profileMsg = profileMsg.substr(endOfLine+1);
 		endOfLine = profileMsg.find('\n');
 	}
-
 }
 
 
 void RenderingPipeline::run(RenderingPipeline *pipe, SampleConfig &config)
 {
 	pipe->updatePipelineRequirementFlags();
-	RtSample::run(config, std::unique_ptr<Renderer>(pipe));
+	Sample::run(config, std::unique_ptr<Renderer>(pipe));
 }

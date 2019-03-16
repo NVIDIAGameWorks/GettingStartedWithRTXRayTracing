@@ -99,8 +99,10 @@ ShadingData simplePrepareShadingData(VertexOut v, MaterialData m, float3 camPosW
 {
 	ShadingData sd = initShadingData();
 
+    ExplicitLodTextureSampler lodSampler = { 0 };  // Specify the tex lod/mip to use here
+
 	// Sample the diffuse texture and apply the alpha test
-	float4 baseColor = sampleTexture(m.resources.baseColor, m.resources.samplerState, v.texC, m.baseColor, EXTRACT_DIFFUSE_TYPE(m.flags));
+	float4 baseColor = sampleTexture(m.resources.baseColor, m.resources.samplerState, v.texC, m.baseColor, EXTRACT_DIFFUSE_TYPE(m.flags), lodSampler);
 	sd.opacity = m.baseColor.a;
 
 	sd.posW = v.posW;
@@ -114,7 +116,7 @@ ShadingData simplePrepareShadingData(VertexOut v, MaterialData m, float3 camPosW
 	sd.lightMap = sd.N;
 
 	// Sample the spec texture
-	float4 spec = sampleTexture(m.resources.specular, m.resources.samplerState, v.texC, m.specular, EXTRACT_SPECULAR_TYPE(m.flags));
+	float4 spec = sampleTexture(m.resources.specular, m.resources.samplerState, v.texC, m.specular, EXTRACT_SPECULAR_TYPE(m.flags), lodSampler);
 	if (EXTRACT_SHADING_MODEL(m.flags) == ShadingModelMetalRough)
 	{
 		sd.diffuse = lerp(baseColor.rgb, float3(0), spec.b);
@@ -133,7 +135,7 @@ ShadingData simplePrepareShadingData(VertexOut v, MaterialData m, float3 camPosW
 	sd.IoR = m.IoR;
 	sd.doubleSidedMaterial = EXTRACT_DOUBLE_SIDED(m.flags);
 
-	applyNormalMap(m, sd);
+	applyNormalMap(m, sd, lodSampler);
 	sd.NdotV = dot(sd.N, sd.V);
 
 	// Flip the normal if it's backfacing

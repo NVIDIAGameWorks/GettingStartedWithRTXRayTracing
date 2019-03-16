@@ -19,9 +19,9 @@
 #include "HostDeviceSharedMacros.h"
 
 // Include and import common Falcor utilities and data structures
-__import Raytracing;
-__import ShaderCommon;
-__import Shading;                      // Shading functions, etc     
+import Raytracing;
+import ShaderCommon;
+import Shading;                      // Shading functions, etc     
 
 // Include utility functions for sampling random numbers
 #include "thinLensUtils.hlsli"
@@ -63,18 +63,19 @@ RWTexture2D<float4> gMatExtra;
 void PrimaryMiss(inout SimpleRayPayload hitData)
 {
 	// Store the background color into our diffuse material buffer
-	gMatDif[ DispatchRaysIndex() ] = float4( gBgColor, 1.0f );
+	gMatDif[ DispatchRaysIndex().xy ] = float4( gBgColor, 1.0f );
 }
 
 [shader("anyhit")]
-void PrimaryAnyHit(inout SimpleRayPayload hitData, BuiltinIntersectionAttribs attribs)
+void PrimaryAnyHit(inout SimpleRayPayload hitData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Run a Falcor helper to extract the hit point's geometric data
 	VertexOut  vsOut = getVertexAttributes(PrimitiveIndex(), attribs);
 
-	// Extracts the diffuse color from the material (the alpha component is opacity)
-	float4 baseColor = sampleTexture(gMaterial.resources.baseColor, gMaterial.resources.samplerState,
-		vsOut.texC, gMaterial.baseColor, EXTRACT_DIFFUSE_TYPE(gMaterial.flags));
+    // Extracts the diffuse color from the material (the alpha component is opacity)
+    ExplicitLodTextureSampler lodSampler = { 0 };  // Specify the tex lod/mip to use here
+    float4 baseColor = sampleTexture(gMaterial.resources.baseColor, gMaterial.resources.samplerState,
+        vsOut.texC, gMaterial.baseColor, EXTRACT_DIFFUSE_TYPE(gMaterial.flags), lodSampler);
 
 	// Test if this hit point passes a standard alpha test.  If not, discard/ignore the hit.
 	if (baseColor.a < gMaterial.alphaThreshold)
@@ -82,16 +83,16 @@ void PrimaryAnyHit(inout SimpleRayPayload hitData, BuiltinIntersectionAttribs at
 }
 
 [shader("closesthit")]
-void PrimaryClosestHit(inout SimpleRayPayload rayData, BuiltinIntersectionAttribs attribs)
+void PrimaryClosestHit(inout SimpleRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	rayData.hit = true;
 
 	// Get some information about the current ray
-	uint2  launchIndex     = DispatchRaysIndex();  
+	uint2  launchIndex     = DispatchRaysIndex().xy;  
 
 	// Run a pair of Falcor helper functions to compute important data at the current hit point
-	VertexOut  vsOut       = getVertexAttributes(PrimitiveIndex(), attribs);     // Get geometrical data
-	ShadingData shadeData  = prepareShadingData(vsOut, gMaterial, gCamera.posW); // Get shading data
+	VertexOut  vsOut       = getVertexAttributes(PrimitiveIndex(), attribs);        // Get geometrical data
+	ShadingData shadeData  = prepareShadingData(vsOut, gMaterial, gCamera.posW, 0); // Get shading data
 
 	// Check if we hit the back of a double-sided material, in which case, we flip
 	//     normals around here (so we don't need to when shading)
@@ -112,8 +113,8 @@ void PrimaryClosestHit(inout SimpleRayPayload rayData, BuiltinIntersectionAttrib
 void GBufferRayGen()
 {
 	// Get our pixel's position on the screen
-	uint2 launchIndex = DispatchRaysIndex();
-	uint2 launchDim   = DispatchRaysDimensions();
+	uint2 launchIndex = DispatchRaysIndex().xy;
+	uint2 launchDim   = DispatchRaysDimensions().xy;
 
 	// Convert our ray index into a ray direction in world space
 	float2 pixelCenter = (launchIndex + gPixelJitter) / launchDim;

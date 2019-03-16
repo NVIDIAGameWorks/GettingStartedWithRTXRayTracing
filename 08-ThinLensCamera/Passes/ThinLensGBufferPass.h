@@ -27,7 +27,7 @@
 #include "../SharedUtils/RayLaunch.h"
 #include <random>
 
-class ThinLensGBufferPass : public RenderPass, inherit_shared_from_this<RenderPass, ThinLensGBufferPass>
+class ThinLensGBufferPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, ThinLensGBufferPass>
 {
 public:
     using SharedPtr = std::shared_ptr<ThinLensGBufferPass>;
@@ -37,13 +37,13 @@ public:
     virtual ~ThinLensGBufferPass() = default;
 
 protected:
-	ThinLensGBufferPass() : RenderPass("Thin Lens Camera", "Thin Lens G-Buffer Options") {}
+	ThinLensGBufferPass() : ::RenderPass("Thin Lens Camera", "Thin Lens G-Buffer Options") {}
 
     // Implementation of RenderPass interface
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void execute(RenderContext* pRenderContext) override;
 	void renderGui(Gui* pGui) override;
-	void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) override;
+	void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
 
 	// The RenderPass class defines various methods we can override to specify this pass' properties. 
 	bool requiresScene() override { return true; }

@@ -43,11 +43,11 @@ void getLightData(in int index, in float3 hitPos, out float3 toLight, out float3
 
 // Encapsulates a bunch of Falcor stuff into one simpler function. 
 //    -> This can only be called within a closest hit or any hit shader
-ShadingData getHitShadingData( BuiltinIntersectionAttribs attribs )
+ShadingData getHitShadingData(BuiltInTriangleIntersectionAttributes attribs )
 {
 	// Run a pair of Falcor helper functions to compute important data at the current hit point
 	VertexOut  vsOut = getVertexAttributes(PrimitiveIndex(), attribs);
-	return prepareShadingData(vsOut, gMaterial, gCamera.posW);
+	return prepareShadingData(vsOut, gMaterial, gCamera.posW, 0);
 }
 
 
@@ -146,14 +146,15 @@ float3 getUniformHemisphereSample(inout uint randSeed, float3 hitNorm)
 // This function tests if the alpha test fails, given the attributes of the current hit. 
 //   -> Can legally be called in a DXR any-hit shader or a DXR closest-hit shader, and 
 //      accesses Falcor helpers and data structures to extract and perform the alpha test.
-bool alphaTestFails(BuiltinIntersectionAttribs attribs)
+bool alphaTestFails(BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Run a Falcor helper to extract the current hit point's geometric data
 	VertexOut  vsOut = getVertexAttributes(PrimitiveIndex(), attribs);
 
-	// Extracts the diffuse color from the material (the alpha component is opacity)
-	float4 baseColor = sampleTexture(gMaterial.resources.baseColor, gMaterial.resources.samplerState,
-		vsOut.texC, gMaterial.baseColor, EXTRACT_DIFFUSE_TYPE(gMaterial.flags));
+    // Extracts the diffuse color from the material (the alpha component is opacity)
+    ExplicitLodTextureSampler lodSampler = { 0 };  // Specify the tex lod/mip to use here
+    float4 baseColor = sampleTexture(gMaterial.resources.baseColor, gMaterial.resources.samplerState,
+        vsOut.texC, gMaterial.baseColor, EXTRACT_DIFFUSE_TYPE(gMaterial.flags), lodSampler);
 
 	// Test if this hit point fails a standard alpha test.  
 	return (baseColor.a < gMaterial.alphaThreshold);

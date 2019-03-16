@@ -20,10 +20,10 @@
 #include "HostDeviceData.h"            // Some #defines used for shading across Falcor
 
 // Include and import common Falcor utilities and data structures
-__import Raytracing;
-__import ShaderCommon; 
-__import Shading;                      // Shading functions, etc   
-__import Lights;                       // Light structures for our current scene
+import Raytracing;
+import ShaderCommon; 
+import Shading;                      // Shading functions, etc   
+import Lights;                       // Light structures for our current scene
 
 // A separate file with some simple utility functions: getPerpendicularVector(), initRand(), nextRand()
 #include "lambertianPlusShadowsUtils.hlsli"
@@ -71,14 +71,15 @@ void ShadowMiss(inout ShadowRayPayload rayData)
 }
 
 [shader("anyhit")]
-void ShadowAnyHit(inout ShadowRayPayload rayData, BuiltinIntersectionAttribs attribs)
+void ShadowAnyHit(inout ShadowRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Run a Falcor helper to extract the hit point's geometric data
 	VertexOut  vsOut = getVertexAttributes(PrimitiveIndex(), attribs);
 
-	// Extracts the diffuse color from the material (the alpha component is opacity)
-	float4 baseColor = sampleTexture(gMaterial.resources.baseColor, gMaterial.resources.samplerState,
-		vsOut.texC, gMaterial.baseColor, EXTRACT_DIFFUSE_TYPE(gMaterial.flags));
+    // Extracts the diffuse color from the material (the alpha component is opacity)
+    ExplicitLodTextureSampler lodSampler = { 0 };  // Specify the tex lod/mip to use here
+    float4 baseColor = sampleTexture(gMaterial.resources.baseColor, gMaterial.resources.samplerState,
+        vsOut.texC, gMaterial.baseColor, EXTRACT_DIFFUSE_TYPE(gMaterial.flags), lodSampler);
 
 	// Test if this hit point passes a standard alpha test.  If not, discard/ignore the hit.
 	if (baseColor.a < gMaterial.alphaThreshold)
@@ -89,7 +90,7 @@ void ShadowAnyHit(inout ShadowRayPayload rayData, BuiltinIntersectionAttribs att
 }
 
 [shader("closesthit")]
-void ShadowClosestHit(inout ShadowRayPayload rayData, BuiltinIntersectionAttribs attribs)
+void ShadowClosestHit(inout ShadowRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	rayData.hitDist = RayTCurrent();
 }
@@ -99,8 +100,8 @@ void ShadowClosestHit(inout ShadowRayPayload rayData, BuiltinIntersectionAttribs
 void LambertShadowsRayGen()
 {
 	// Where is this ray on screen?
-	uint2 launchIndex = DispatchRaysIndex();
-	uint2 launchDim   = DispatchRaysDimensions();
+	uint2 launchIndex = DispatchRaysIndex().xy;
+	uint2 launchDim   = DispatchRaysDimensions().xy;
 
 	// Load g-buffer data
 	float4 worldPos     = gPos[launchIndex];

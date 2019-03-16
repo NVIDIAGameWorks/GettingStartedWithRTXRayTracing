@@ -37,7 +37,7 @@ namespace {
 	const float kMSAA[8][2] = { { 1,-3 },{ -1,3 },{ 5,1 },{ -3,-5 },{ -5,5 },{ -7,-1 },{ 3,7 },{ 7,-7 } };
 };
 
-bool LightProbeGBufferPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool LightProbeGBufferPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash a copy of our resource manager so we can get rendering resources
 	mpResManager = pResManager;
@@ -68,7 +68,7 @@ bool LightProbeGBufferPass::initialize(RenderContext::SharedPtr pRenderContext, 
     return true;
 }
 
-void LightProbeGBufferPass::initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene)
+void LightProbeGBufferPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Stash a copy of the scene and pass it to our ray tracer (if initialized)
 	mpScene = std::dynamic_pointer_cast<RtScene>(pScene);
@@ -101,7 +101,7 @@ void LightProbeGBufferPass::renderGui(Gui* pGui)
 	if (dirty) setRefreshFlag();
 }
 
-void LightProbeGBufferPass::execute(RenderContext::SharedPtr pRenderContext)
+void LightProbeGBufferPass::execute(RenderContext* pRenderContext)
 {
 	// Check that we're ready to render
 	if (!mpRays || !mpRays->readyToRender()) return;

@@ -21,10 +21,10 @@
 #include "HostDeviceData.h"           
 
 // Include and import common Falcor utilities and data structures
-__import Raytracing;                   // Shared ray tracing specific functions & data
-__import ShaderCommon;                 // Shared shading data structures
-__import Shading;                      // Shading functions, etc     
-__import Lights;                       // Light structures for our current scene
+import Raytracing;                   // Shared ray tracing specific functions & data
+import ShaderCommon;                 // Shared shading data structures
+import Shading;                      // Shading functions, etc     
+import Lights;                       // Light structures for our current scene
 
 // A separate file with some simple utility functions: getPerpendicularVector(), initRand(), nextRand()
 #include "simpleDiffuseGIUtils.hlsli"
@@ -75,7 +75,7 @@ void IndirectMiss(inout IndirectRayPayload rayData)
 
 // What code is executed when our ray hits a potentially transparent surface?
 [shader("anyhit")]
-void IndirectAnyHit(inout IndirectRayPayload rayData, BuiltinIntersectionAttribs attribs)
+void IndirectAnyHit(inout IndirectRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Is this a transparent part of the surface?  If so, ignore this hit
 	if (alphaTestFails(attribs))
@@ -85,7 +85,7 @@ void IndirectAnyHit(inout IndirectRayPayload rayData, BuiltinIntersectionAttribs
 // What code is executed when we have a new closest hitpoint?   Well, pick a random light,
 //    shoot a shadow ray to that light, and shade using diffuse shading.
 [shader("closesthit")]
-void IndirectClosestHit(inout IndirectRayPayload rayData, BuiltinIntersectionAttribs attribs)
+void IndirectClosestHit(inout IndirectRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Run a helper functions to extract Falcor scene data for shading
 	ShadingData shadeData = getHitShadingData( attribs );
@@ -137,8 +137,8 @@ float3 shootIndirectRay(float3 rayOrigin, float3 rayDir, float minT, uint seed)
 void SimpleDiffuseGIRayGen()
 {
 	// Where is this ray on screen?
-	uint2 launchIndex = DispatchRaysIndex();
-	uint2 launchDim   = DispatchRaysDimensions();
+	uint2 launchIndex = DispatchRaysIndex().xy;
+	uint2 launchDim   = DispatchRaysDimensions().xy;
 
 	// Load g-buffer data
 	float4 worldPos     = gPos[launchIndex];

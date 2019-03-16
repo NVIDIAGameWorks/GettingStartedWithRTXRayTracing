@@ -61,7 +61,7 @@ void IndirectMiss(inout IndirectRayPayload rayData)
 }
 
 [shader("anyhit")]
-void IndirectAnyHit(inout IndirectRayPayload rayData, BuiltinIntersectionAttribs attribs)
+void IndirectAnyHit(inout IndirectRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Is this a transparent part of the surface?  If so, ignore this hit
 	if (alphaTestFails(attribs))
@@ -195,14 +195,20 @@ float3 ggxIndirect(inout uint rndSeed, float3 hit, float3 N, float3 noNormalN, f
 }
 
 [shader("closesthit")]
-void IndirectClosestHit(inout IndirectRayPayload rayData, BuiltinIntersectionAttribs attribs)
+void IndirectClosestHit(inout IndirectRayPayload rayData, BuiltInTriangleIntersectionAttributes attribs)
 {
 	// Run a helper functions to extract Falcor scene data for shading
 	ShadingData shadeData = getHitShadingData( attribs, WorldRayOrigin() );
 
+    // Add emissive color
+    rayData.color = gEmitMult * shadeData.emissive.rgb;
+
 	// Do direct illumination at this hit location
-	rayData.color = ggxDirect(rayData.rndSeed, shadeData.posW, shadeData.N, shadeData.V,
-		                      shadeData.diffuse, shadeData.specular, shadeData.roughness);
+    if (gDoDirectGI)
+    {
+        rayData.color += ggxDirect(rayData.rndSeed, shadeData.posW, shadeData.N, shadeData.V,
+            shadeData.diffuse, shadeData.specular, shadeData.roughness);
+    }
 
 	// Do indirect illumination at this hit location (if we haven't traversed too far)
 	if (rayData.rayDepth < gMaxDepth)

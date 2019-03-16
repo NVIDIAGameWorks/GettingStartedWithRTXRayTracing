@@ -30,7 +30,7 @@ namespace {
 	const char* kEntryAoClosestHit = "ShadowClosestHit";
 };
 
-bool DiffuseOneShadowRayPass::initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager)
+bool DiffuseOneShadowRayPass::initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager)
 {
 	// Stash a copy of our resource manager so we can get rendering resources
 	mpResManager = pResManager;
@@ -49,14 +49,14 @@ bool DiffuseOneShadowRayPass::initialize(RenderContext::SharedPtr pRenderContext
     return true;
 }
 
-void DiffuseOneShadowRayPass::initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene)
+void DiffuseOneShadowRayPass::initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene)
 {
 	// Stash a copy of the scene and pass it to our ray tracer (if initialized)
     mpScene = std::dynamic_pointer_cast<RtScene>(pScene);
 	if (mpRays) mpRays->setScene(mpScene);
 }
 
-void DiffuseOneShadowRayPass::execute(RenderContext::SharedPtr pRenderContext)
+void DiffuseOneShadowRayPass::execute(RenderContext* pRenderContext)
 {
 	// Get the output buffer we're writing into; clear it to black.
 	Texture::SharedPtr pDstTex = mpResManager->getClearedTexture(ResourceManager::kOutputChannel, vec4(0.0f, 0.0f, 0.0f, 0.0f));

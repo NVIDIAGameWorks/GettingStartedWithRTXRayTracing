@@ -20,6 +20,12 @@
 
 using namespace Falcor;
 
+namespace {
+    // Required for later versions of Falcor (post 3.1.0)
+    //const FileDialogFilterVec kSceneExtensions = { {"fscene"} };
+    //const FileDialogFilterVec kTextureExtensions = { { "hdr" }, { "png" }, { "jpg" }, { ".bmp" } };
+};
+
 Falcor::RtScene::SharedPtr loadScene( uvec2 currentScreenSize, const char *defaultFilename )
 {
 	RtScene::SharedPtr pScene;
@@ -28,7 +34,8 @@ Falcor::RtScene::SharedPtr loadScene( uvec2 currentScreenSize, const char *defau
 	std::string filename;
 	if (!defaultFilename)
 	{
-		if (!openFileDialog("All supported formats\0*.fscene\0Falcor scene (*.fscene)\0\0", filename))
+        //if (!openFileDialog(kSceneExtensions, filename))
+        if (!openFileDialog("All supported formats\0*.fscene\0Falcor scene (*.fscene)\0\0", filename))
 			return pScene;
 	}
 	else
@@ -84,9 +91,8 @@ Falcor::RtScene::SharedPtr loadScene( uvec2 currentScreenSize, const char *defau
 
 				// Attach the camera to the scene (as the active camera); change camera motion to something reasonable
 				pScene->setActiveCamera(pScene->addCamera(pCamera));
+				pScene->setCameraSpeed(pScene->getRadius() * 0.25f);
 			}
-			// scene can be huge due to ball, so use a fixed value
-			pScene->setCameraSpeed(0.1f);
 
 			// Set the aspect ratio of the camera appropriately
 			pCamera->setAspectRatio((float)currentScreenSize.x / (float)currentScreenSize.y);
@@ -105,7 +111,8 @@ std::string getTextureLocation(bool &isValid)
 {
 	// Open a dialog box, asking which scene to load; on failure, return invalid scene
 	std::string filename;
-	if (!openFileDialog("All supported formats\0*.hdr;*.png;*.jpg;*.bmp\0\0", filename))
+    if (!openFileDialog("All supported formats\0*.hdr;*.png;*.jpg;*.bmp\0\0", filename))
+	//if (!openFileDialog(kTextureExtensions, filename))
 	{
 		isValid = false;
 		return std::string("");

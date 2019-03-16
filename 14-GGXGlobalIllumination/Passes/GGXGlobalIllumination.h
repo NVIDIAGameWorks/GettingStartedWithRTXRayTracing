@@ -24,7 +24,7 @@
 #include "../SharedUtils/RenderPass.h"
 #include "../SharedUtils/RayLaunch.h"
 
-class GGXGlobalIlluminationPass : public RenderPass, inherit_shared_from_this<RenderPass, GGXGlobalIlluminationPass>
+class GGXGlobalIlluminationPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, GGXGlobalIlluminationPass>
 {
 public:
     using SharedPtr = std::shared_ptr<GGXGlobalIlluminationPass>;
@@ -35,12 +35,12 @@ public:
 
 protected:
 	GGXGlobalIlluminationPass(const std::string &outChannel) : mOutputTextureName(outChannel),
-		RenderPass("Global Illum., GGX BRDF", "GGX Global Illumination Options") {}
+		::RenderPass("Global Illum., GGX BRDF", "GGX Global Illumination Options") {}
 
     // Implementation of RenderPass interface
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
-    void initScene(RenderContext::SharedPtr pRenderContext, Scene::SharedPtr pScene) override;
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    void initScene(RenderContext* pRenderContext, Scene::SharedPtr pScene) override;
+    void execute(RenderContext* pRenderContext) override;
 	void renderGui(Gui* pGui) override;
 
 	// Override some functions that provide information to the RenderPipeline class

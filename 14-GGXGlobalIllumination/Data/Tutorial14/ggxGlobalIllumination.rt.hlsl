@@ -21,10 +21,10 @@
 #include "HostDeviceData.h"           
 
 // Include and import common Falcor utilities and data structures
-__import Raytracing;                   // Shared ray tracing specific functions & data
-__import ShaderCommon;                 // Shared shading data structures
-__import Shading;                      // Shading functions, etc     
-__import Lights;                       // Light structures for our current scene
+import Raytracing;                   // Shared ray tracing specific functions & data
+import ShaderCommon;                 // Shared shading data structures
+import Shading;                      // Shading functions, etc     
+import Lights;                       // Light structures for our current scene
 
 // A constant buffer we'll populate from our C++ code  (used for our ray generation shader)
 shared cbuffer GlobalCB
@@ -34,6 +34,7 @@ shared cbuffer GlobalCB
 	bool  gDoIndirectGI;   // A boolean determining if we should shoot indirect GI rays
 	bool  gDoDirectGI;     // A boolean determining if we should compute direct lighting
 	uint  gMaxDepth;       // Maximum number of recursive bounces to allow
+    float gEmitMult;       // Multiply emissive amount by this factor (set to 1, usually)
 }
 
 // Input and out textures that need to be set by the C++ code (for the ray gen shader)
@@ -43,6 +44,7 @@ shared Texture2D<float4>   gDiffuseMatl;
 shared Texture2D<float4>   gSpecMatl;
 shared Texture2D<float4>   gExtraMatl;
 shared Texture2D<float4>   gEnvMap;
+shared Texture2D<float4>   gEmissive;
 shared RWTexture2D<float4> gOutput;
 
 // A separate file with some simple utility functions: getPerpendicularVector(), initRand(), nextRand()
@@ -70,8 +72,8 @@ float probabilityToSampleDiffuse(float3 difColor, float3 specColor)
 void SimpleDiffuseGIRayGen()
 {
 	// Where is this ray on screen?
-	uint2 launchIndex    = DispatchRaysIndex();
-	uint2 launchDim      = DispatchRaysDimensions();
+	uint2 launchIndex    = DispatchRaysIndex().xy;
+	uint2 launchDim      = DispatchRaysDimensions().xy;
 
 	// Load g-buffer data
 	float4 worldPos      = gPos[launchIndex];
@@ -79,6 +81,7 @@ void SimpleDiffuseGIRayGen()
 	float4 difMatlColor  = gDiffuseMatl[launchIndex];
 	float4 specMatlColor = gSpecMatl[launchIndex];
 	float4 extraData     = gExtraMatl[launchIndex];
+    float4 pixelEmissive = gEmissive[launchIndex];
 	
 	// Does this g-buffer pixel contain a valid piece of geometry?  (0 in pos.w for invalid)
 	bool isGeometryValid = (worldPos.w != 0.0f);
@@ -109,9 +112,12 @@ void SimpleDiffuseGIRayGen()
 	// Do shading, if we have geoemtry here (otherwise, output the background color)
 	if (isGeometryValid)
 	{
+        // Add any emissive color from primary rays
+        shadeColor = gEmitMult * pixelEmissive.rgb;
+
 		// (Optionally) do explicit direct lighting to a random light in the scene
 		if (gDoDirectGI)
-			shadeColor = ggxDirect(randSeed, worldPos.xyz, worldNorm.xyz, V,
+			shadeColor += ggxDirect(randSeed, worldPos.xyz, worldNorm.xyz, V,
 				                   difMatlColor.rgb, specMatlColor.rgb, roughness);
 
 		// (Optionally) do indirect lighting for global illumination

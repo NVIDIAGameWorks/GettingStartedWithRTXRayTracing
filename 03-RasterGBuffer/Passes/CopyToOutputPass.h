@@ -19,7 +19,7 @@
 #pragma once
 #include "../SharedUtils/RenderPass.h"
 
-class CopyToOutputPass : public RenderPass, inherit_shared_from_this<RenderPass, CopyToOutputPass>
+class CopyToOutputPass : public ::RenderPass, inherit_shared_from_this<::RenderPass, CopyToOutputPass>
 {
 public:
     using SharedPtr = std::shared_ptr<CopyToOutputPass>;
@@ -31,10 +31,10 @@ protected:
 	// Constructor.  The strings represent:
 	//     1) The name of the pass that will be in the dropdown pass selector widget(s)
 	//     2) The name of the GUI window showing widget controls for this pass
-	CopyToOutputPass() : RenderPass("Copy-to-Output Pass", "Copy-to-Output Options") {}
+	CopyToOutputPass() : ::RenderPass("Copy-to-Output Pass", "Copy-to-Output Options") {}
 	
 	// The initialize() callback will be invoked when this class is instantiated and bound to a pipeline
-    bool initialize(RenderContext::SharedPtr pRenderContext, ResourceManager::SharedPtr pResManager) override;
+    bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
 
 	// The renderGui() callback allows you to attach GUI widget into this pass' options window
     void renderGui(Gui* pGui) override;
@@ -43,7 +43,7 @@ protected:
 	void pipelineUpdated(ResourceManager::SharedPtr pResManager) override;
 
 	// The execute() callback is invoked during frame render when it is this pass' turn to execute
-    void execute(RenderContext::SharedPtr pRenderContext) override;
+    void execute(RenderContext* pRenderContext) override;
 
 	// Override some functions that provide information to the RenderPipeline class
 	bool appliesPostprocess() override { return true; }

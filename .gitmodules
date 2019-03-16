@@ -1,0 +1,4 @@
+[submodule "Falcor"]
+	path = Falcor
+	url = https://github.com/NVIDIAGameWorks/Falcor.git
+	branch = 5a12f298c15b82297447906afafdcf5a2f58f99e
