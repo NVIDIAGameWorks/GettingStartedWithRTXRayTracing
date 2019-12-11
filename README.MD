@@ -57,13 +57,18 @@ You should be able to install the tutorials directory almost anywhere. However, 
 problems with the build scripts if the install directory contains spaces. For now, we suggest 
 avoiding that.
 
-Before compiling, _you need to download the other Falcor dependencies_. We suggest you do this by
-running **update_dependencies.bat** in the **Falcor/** directory. It should download a bunch of
+Before compiling, _you need to include Falcor and download Falcor dependencies_. Falcor itself is
+downloaded by the link on the Github page for these Getting Started program, which currently
+leads to [this Falcor 3.1 repo](https://github.com/NVIDIAGameWorks/Falcor/tree/5a12f298c15b82297447906afafdcf5a2f58f99e).
+If not done automatically, download and put these files in the **Falcor/** directory.
+
+Next, run **update_dependencies.bat** in the **Falcor/**
+directory. It should download a bunch of
 packages and put them in **Falcor/Framework/Externals/** and **Falcor/Media/**. The Visual Studio
 solution will call this script for you via a pre-build step, but it sometimes gives confusing error 
 messages when starting a parallel build.  This is not a problem if you run the script manually.
 
-Open the Visual Studio solution **GettingStartedWithRTXRayTracing.sln**. We suggest you initially choose
+Now open the Visual Studio solution **GettingStartedWithRTXRayTracing.sln**. We suggest you initially choose
 the "ReleaseD3D12" configuration to begin, as programs will start up and run faster. Then "Build | Build Solution"
 to build all the tutorial programs. In the Solution Explorer you right-click and choose "Set as StartUp
 Project" to run that tutorial.
