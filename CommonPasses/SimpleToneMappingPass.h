@@ -26,11 +26,11 @@ public:
     using SharedPtr = std::shared_ptr<SimpleToneMappingPass>;
     using SharedConstPtr = std::shared_ptr<const SimpleToneMappingPass>;
 
-    static SharedPtr create(const std::string &inBuf, const std::string &outBuf) { return SharedPtr(new SimpleToneMappingPass(inBuf, outBuf)); }
+    static SharedPtr create(const std::string &inBuf, const std::string& inHalfBuf, const std::string &outBuf) { return SharedPtr(new SimpleToneMappingPass(inBuf, inHalfBuf, outBuf)); }
     virtual ~SimpleToneMappingPass() = default;
 
 protected:
-	SimpleToneMappingPass(const std::string &inBuf, const std::string &outBuf);
+	SimpleToneMappingPass(const std::string &inBuf, const std::string& inHalfBuf, const std::string &outBuf);
 
     // Implementation of SimpleRenderPass interface
 	bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
@@ -43,6 +43,12 @@ protected:
       
 	GraphicsState::SharedPtr    mpGfxState;
 	std::string                 mInChannel;         ///< What resource are we expecting as our input?
+
+	GraphicsState::SharedPtr    mpHalfGfxState;
+	std::string                 mHalfInChannel;         ///< What resource are we expecting as our input?
+
 	std::string                 mOutChannel;        ///< What resource should we dump our output into?
 	ToneMapping::SharedPtr      mpToneMapper;       ///< Falcor's utility class for tone-mapping.
+
+	bool                        mPickHalfRes = false;
 };

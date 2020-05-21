@@ -27,11 +27,12 @@ public:
     using SharedPtr = std::shared_ptr<SimpleAccumulationPass>;
     using SharedConstPtr = std::shared_ptr<const SimpleAccumulationPass>;
 
-    static SharedPtr create(const std::string &bufferToAccumulate) { return SharedPtr(new SimpleAccumulationPass(bufferToAccumulate)); }
+    static SharedPtr create(const std::string &bufferToAccumulate,
+							const std::string& bufferHalfToAccumulate) { return SharedPtr(new SimpleAccumulationPass(bufferToAccumulate, bufferHalfToAccumulate)); }
     virtual ~SimpleAccumulationPass() = default;
 
 protected:
-	SimpleAccumulationPass(const std::string &bufferToAccumulate);
+	SimpleAccumulationPass(const std::string &bufferToAccumulate, const std::string& bufferHalfToAccumulate);
 
     // Implementation of SimpleRenderPass interface
 	bool initialize(RenderContext* pRenderContext, ResourceManager::SharedPtr pResManager) override;
@@ -50,12 +51,20 @@ protected:
 
     // Information about the rendering texture we're accumulating into
 	std::string                   mAccumChannel;
+	std::string                   mHalfAccumChannel;
 
 	// State for our accumulation shader
 	FullscreenLaunch::SharedPtr   mpAccumShader;
 	GraphicsState::SharedPtr      mpGfxState;
+
+	FullscreenLaunch::SharedPtr   mpHalfAccumShader;
+	GraphicsState::SharedPtr      mpHalfGfxState;
+
 	Texture::SharedPtr            mpLastFrame;
 	Fbo::SharedPtr                mpInternalFbo;
+
+	Texture::SharedPtr            mpHalfLastFrame;
+	Fbo::SharedPtr                mpHalfInternalFbo;
 
 	// We stash a copy of our current scene.  Why?  To detect if changes have occurred.
 	Scene::SharedPtr              mpScene;

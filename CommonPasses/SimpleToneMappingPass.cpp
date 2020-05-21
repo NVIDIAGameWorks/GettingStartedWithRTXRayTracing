@@ -18,8 +18,8 @@
 
 #include "SimpleToneMappingPass.h"
 
-SimpleToneMappingPass::SimpleToneMappingPass(const std::string &inBuf, const std::string &outBuf)
-	: mInChannel(inBuf), mOutChannel(outBuf), ::RenderPass("Simple Tone Mapping", "Tone Mapping Options")
+SimpleToneMappingPass::SimpleToneMappingPass(const std::string &inBuf, const std::string& inHalfBuf, const std::string &outBuf)
+	: mInChannel(inBuf), mHalfInChannel(inHalfBuf), mOutChannel(outBuf), ::RenderPass("Simple Tone Mapping", "Tone Mapping Options")
 {
 }
 
@@ -30,10 +30,12 @@ bool SimpleToneMappingPass::initialize(RenderContext* pRenderContext, ResourceMa
 	// Stash our resource manager; ask for the texture the developer asked us to accumulate
 	mpResManager = pResManager;
 	mpResManager->requestTextureResource(mInChannel);
+	mpResManager->requestTextureResource(mHalfInChannel);
 	mpResManager->requestTextureResource(mOutChannel);
 
 	// The Falcor tonemapper can screw with DX pipeline state, so we'll want to create a disposible state object.
 	mpGfxState = GraphicsState::create();
+	mpHalfGfxState = GraphicsState::create();
 
 	// Falcor has a built-in utility for tonemapping.  Initialize that
 	mpToneMapper = ToneMapping::create(ToneMapping::Operator::Clamp);
@@ -43,22 +45,36 @@ bool SimpleToneMappingPass::initialize(RenderContext* pRenderContext, ResourceMa
 
 void SimpleToneMappingPass::renderGui(Gui* pGui)
 {
+	//add button to decide which texture you want to view
+	if (pGui->addCheckBox(mPickHalfRes ? "Half resolution output" : "Full resolution output", mPickHalfRes))
+	{
+		setRefreshFlag();
+	}
 	// Let the Falcor tonemapper put it's UI in an appropriate spot
+
 	mpToneMapper->renderUI(pGui, nullptr); 
 }
 
 void SimpleToneMappingPass::execute(RenderContext* pRenderContext)
 {
 	if (!mpResManager) return;
-   
+
 	// Probably should do this once outside the main render loop.
-    Texture::SharedPtr srcTex = mpResManager->getTexture( mInChannel );
-	Fbo::SharedPtr dstFbo     = mpResManager->createManagedFbo({ mOutChannel });
+	Texture::SharedPtr srcTex = mpResManager->getTexture(mInChannel);
+	Texture::SharedPtr srcHalfTex = mpResManager->getTexture(mHalfInChannel);
+	Fbo::SharedPtr dstFbo = mpResManager->createManagedFbo({ mOutChannel });
 
 	// Execute our tone mapping pass
-	pRenderContext->pushGraphicsState(mpGfxState);
+	if (!mPickHalfRes) {
+		pRenderContext->pushGraphicsState(mpGfxState);
 		mpToneMapper->execute(pRenderContext, srcTex, dstFbo);
-	pRenderContext->popGraphicsState();
+		pRenderContext->popGraphicsState();
+	}
+	else {
+		pRenderContext->pushGraphicsState(mpHalfGfxState);
+		mpToneMapper->execute(pRenderContext, srcHalfTex, dstFbo);
+		pRenderContext->popGraphicsState();
+	}
 }
 
 

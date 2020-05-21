@@ -47,6 +47,7 @@ protected:
 
 	// Internal pass state
 	RayLaunch::SharedPtr        mpRays;            ///< Our wrapper around a DX Raytracing pass
+	RayLaunch::SharedPtr        mpHalfRays;
 	RtScene::SharedPtr          mpScene;           ///<  A copy of our scene
 
 	// Thin lens parameters

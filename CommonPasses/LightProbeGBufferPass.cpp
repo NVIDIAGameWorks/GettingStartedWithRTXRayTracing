@@ -18,7 +18,6 @@
 
 #include "LightProbeGBufferPass.h"
 #include <chrono>
-
 namespace {
 	// Where is our environment map located?
 	const char* kEnvironmentMap = "MonValley_G_DirtRoad_3k.hdr";
@@ -43,12 +42,20 @@ bool LightProbeGBufferPass::initialize(RenderContext* pRenderContext, ResourceMa
 	mpResManager = pResManager;
 
 	// We write to these textures; tell our resource manager that we expect them
-	mpResManager->requestTextureResource("WorldPosition");
+	mpResManager->requestTextureResource("WorldPosition", ResourceFormat::RGBA32Float);
 	mpResManager->requestTextureResource("WorldNormal", ResourceFormat::RGBA16Float);
 	mpResManager->requestTextureResource("MaterialDiffuse", ResourceFormat::RGBA16Float);
 	mpResManager->requestTextureResource("MaterialSpecRough", ResourceFormat::RGBA16Float);
 	mpResManager->requestTextureResource("MaterialExtraParams", ResourceFormat::RGBA16Float);
 	mpResManager->requestTextureResource("Emissive", ResourceFormat::RGBA16Float);
+
+
+	mpResManager->requestTextureResource("HalfWorldPosition", ResourceFormat::RGBA32Float, mpResManager->kDefaultFlags, 960, 540);
+	mpResManager->requestTextureResource("HalfWorldNormal", ResourceFormat::RGBA32Float, mpResManager->kDefaultFlags, 960, 540);
+	mpResManager->requestTextureResource("HalfMaterialDiffuse", ResourceFormat::RGBA32Float, mpResManager->kDefaultFlags, 960, 540);
+	mpResManager->requestTextureResource("HalfMaterialSpecRough", ResourceFormat::RGBA32Float, mpResManager->kDefaultFlags, 960, 540);
+	mpResManager->requestTextureResource("HalfMaterialExtraParams", ResourceFormat::RGBA32Float, mpResManager->kDefaultFlags, 960, 540);
+	mpResManager->requestTextureResource("HalfEmissive", ResourceFormat::RGBA32Float, mpResManager->kDefaultFlags, 960, 540);
 
 	// Create our wrapper around a ray tracing pass.  Tell it where our shaders are, then compile/link the program
 	mpRays = RayLaunch::create(kFileRayTrace, kEntryPointRayGen);
@@ -56,6 +63,13 @@ bool LightProbeGBufferPass::initialize(RenderContext* pRenderContext, ResourceMa
 	mpRays->addHitShader(kFileRayTrace, kEntryPrimaryClosestHit, kEntryPrimaryAnyHit);
 	mpRays->compileRayProgram();
 	if (mpScene) mpRays->setScene(mpScene);
+
+	//create wrapper for half resolution ray tracing pass. Same as above but will be at half screen res
+	mpHalfRays = RayLaunch::create(kFileRayTrace, kEntryPointRayGen);
+	mpHalfRays->addMissShader(kFileRayTrace, kEntryPointMiss0);
+	mpHalfRays->addHitShader(kFileRayTrace, kEntryPrimaryClosestHit, kEntryPrimaryAnyHit);
+	mpHalfRays->compileRayProgram();
+	if (mpScene) mpHalfRays->setScene(mpScene);
 
 	// Set up our random number generator by seeding it with the current time 
 	auto currentTime = std::chrono::high_resolution_clock::now();
@@ -73,6 +87,8 @@ void LightProbeGBufferPass::initScene(RenderContext* pRenderContext, Scene::Shar
 	// Stash a copy of the scene and pass it to our ray tracer (if initialized)
 	mpScene = std::dynamic_pointer_cast<RtScene>(pScene);
 	if (mpRays) mpRays->setScene(mpScene);
+
+	if (mpHalfRays) mpHalfRays->setScene(mpScene);
 }
 
 void LightProbeGBufferPass::renderGui(Gui* pGui)
@@ -106,6 +122,9 @@ void LightProbeGBufferPass::execute(RenderContext* pRenderContext)
 	// Check that we're ready to render
 	if (!mpRays || !mpRays->readyToRender()) return;
 
+	//Check that half is ready to render
+	if (!mpHalfRays || !mpHalfRays->readyToRender()) return;
+
 	// Load our textures, but ask the resource manager to clear them to black before returning them
 	Texture::SharedPtr wsPos = mpResManager->getClearedTexture("WorldPosition", vec4(0, 0, 0, 0));
 	Texture::SharedPtr wsNorm = mpResManager->getClearedTexture("WorldNormal", vec4(0, 0, 0, 0));
@@ -113,6 +132,14 @@ void LightProbeGBufferPass::execute(RenderContext* pRenderContext)
 	Texture::SharedPtr matSpec = mpResManager->getClearedTexture("MaterialSpecRough", vec4(0, 0, 0, 0));
 	Texture::SharedPtr matExtra = mpResManager->getClearedTexture("MaterialExtraParams", vec4(0, 0, 0, 0));
 	Texture::SharedPtr matEmit = mpResManager->getClearedTexture("Emissive", vec4(0, 0, 0, 0));
+
+	//Load textures for half resolution ray trace
+	Texture::SharedPtr HalfwsPos = mpResManager->getClearedTexture("HalfWorldPosition", vec4(0, 0, 0, 0));
+	Texture::SharedPtr HalfwsNorm = mpResManager->getClearedTexture("HalfWorldNormal", vec4(0, 0, 0, 0));
+	Texture::SharedPtr HalfmatDif = mpResManager->getClearedTexture("HalfMaterialDiffuse", vec4(0, 0, 0, 0));
+	Texture::SharedPtr HalfmatSpec = mpResManager->getClearedTexture("HalfMaterialSpecRough", vec4(0, 0, 0, 0));
+	Texture::SharedPtr HalfmatExtra = mpResManager->getClearedTexture("HalfMaterialExtraParams", vec4(0, 0, 0, 0));
+	Texture::SharedPtr HalfmatEmit = mpResManager->getClearedTexture("HalfEmissive", vec4(0, 0, 0, 0));
 	mLightProbe = mpResManager->getTexture(ResourceManager::kEnvironmentMap);
 
 	// Compute parameters based on our user-exposed controls
@@ -127,10 +154,24 @@ void LightProbeGBufferPass::execute(RenderContext* pRenderContext)
 	sharedVars["gMatExtra"] = matExtra;
 	sharedVars["gMatEmissive"] = matEmit;
 
+	// Pass our background color down to our half miss shader
+	auto sharedHalfVars = mpHalfRays->getGlobalVars();
+	sharedHalfVars["gWsPos"] = HalfwsPos;
+	sharedHalfVars["gWsNorm"] = HalfwsNorm;
+	sharedHalfVars["gMatDif"] = HalfmatDif;
+	sharedHalfVars["gMatSpec"] = HalfmatSpec;
+	sharedHalfVars["gMatExtra"] = HalfmatExtra;
+	sharedHalfVars["gMatEmissive"] = HalfmatEmit;
+
 	// Pass our background color down to our miss shader
 	auto missVars = mpRays->getMissVars(0);
 	missVars["MissShaderCB"]["gEnvMapRes"] = uvec2(mLightProbe->getWidth(), mLightProbe->getHeight());
 	missVars["gEnvMap"] = mLightProbe;
+
+	// Pass our background color down to our half miss shader
+	auto missHalfVars = mpHalfRays->getMissVars(0);
+	missHalfVars["MissShaderCB"]["gEnvMapRes"] = uvec2(mLightProbe->getWidth(), mLightProbe->getHeight());
+	missHalfVars["gEnvMap"] = mLightProbe;
 
 	// Pass our camera parameters to the ray generation shader
 	auto rayGenVars = mpRays->getRayGenVars();
@@ -138,6 +179,14 @@ void LightProbeGBufferPass::execute(RenderContext* pRenderContext)
 	rayGenVars["RayGenCB"]["gFrameCount"]  = mFrameCount++;
 	rayGenVars["RayGenCB"]["gLensRadius"]  = mLensRadius;
 	rayGenVars["RayGenCB"]["gFocalLen"]    = mFocalLength;
+
+	// Pass our camera parameters to the half ray generation shader
+	auto rayHalfGenVars = mpHalfRays->getRayGenVars();
+	rayHalfGenVars["RayGenCB"]["gUseThinLens"] = mUseThinLens;
+	//framecount already incremented above
+	rayHalfGenVars["RayGenCB"]["gFrameCount"] = mFrameCount;
+	rayHalfGenVars["RayGenCB"]["gLensRadius"] = mLensRadius;
+	rayHalfGenVars["RayGenCB"]["gFocalLen"] = mFocalLength;
 
 	if (mUseJitter)
 	{
@@ -147,15 +196,18 @@ void LightProbeGBufferPass::execute(RenderContext* pRenderContext)
 
 		// Set our shader and the scene camera to use the computed jitter
 		rayGenVars["RayGenCB"]["gPixelJitter"] = vec2( xOff + 0.5f, yOff + 0.5f );
+		rayHalfGenVars["RayGenCB"]["gPixelJitter"] = vec2(xOff + 0.5f, yOff + 0.5f);
 		mpScene->getActiveCamera()->setJitter(xOff / float(wsPos->getWidth()), yOff / float(wsPos->getHeight()));
 	}
 	else
 	{
 		// No jitter, so sent our shader values that mean "use center of pixel"
 		rayGenVars["RayGenCB"]["gPixelJitter"] = vec2(0.5f, 0.5f);
+		rayHalfGenVars["RayGenCB"]["gPixelJitter"] = vec2(0.5f, 0.5f);
 		mpScene->getActiveCamera()->setJitter(0,0);
 	}
 
 	// Launch our ray tracing
 	mpRays->execute( pRenderContext, uvec2(wsPos->getWidth(),wsPos->getHeight()) );
+	mpHalfRays->execute(pRenderContext, uvec2(HalfwsPos->getWidth(), HalfwsPos->getHeight()));
 }
