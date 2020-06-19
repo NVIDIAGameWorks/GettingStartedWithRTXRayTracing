@@ -86,11 +86,10 @@ Troubleshooting:
 ----------------
 
 Visual Studio gives "Error MSB3073" when building.  This is an issue with the pre-build 
-step, and we've seen it in the following cases:
+step and we've seen it in the following cases:
 
    * The installation directory name (or parent directories) contains a space.
-   * You ran a parallel build; our pre-build script gets called for each tutorial and fails 
-     on all except the first.  This is usually a one-time error and rebuilding solves the problem.
+   * You ran a parallel build; our pre-build script gets called for each tutorial and fails on all except the first.  This is usually a one-time error and rebuilding solves the problem.
    * There are installation problems with the dependencies.  Remove the "Falcor/Media/" directory
      and all subdirectories in the **Falcor/Framework/Externals/** directory (you can do this with
 	 **delete_dependencies.bat**) and rerun **update_dependencies.bat** in the **Falcor/**
@@ -130,7 +129,7 @@ Other useful resources:
    * The [_Real-Time Rendering_ Ray Tracing Resources Page](http://www.realtimerendering.com/raytracing.html), which includes a free chapter on the basic ideas behind DXR and interactive ray tracing.
 
 ----------------------------------------------------------------------------------------------
-Acknowledgments:
+Acknowledgements:
 ----------------------------------------------------------------------------------------------
 
 The desert HDR environment map (MonValley Dirtroad) is provided from the sIBL Archive under a 
@@ -138,7 +137,7 @@ Creative Commons license [CC BY-NC-SA 3.0 US](http://www.hdrlabs.com/sibl/archiv
 
 The included "pink_room" scene is named 'The Modern Living Room' by Wig42 on [Benedikt Bitterli's
 webpage](https://benedikt-bitterli.me/resources/). It has been modified to match the Falcor 
-material system.  This scene was released under a CC-BY license. It may be copied, modified and 
+material system. This scene was released under a CC-BY license. It may be copied, modified and 
 used commercially without permission, as long as: Appropriate credit is given to the original author
 The original scene file may be obtained [here](http://www.blendswap.com/blends/view/75692).
 
@@ -147,3 +146,5 @@ The moon texture came from here under [CC BY 4.0 license](https://www.solarsyste
 The earth texture is [public domain from here](http://www.shadedrelief.com/natural3/pages/textures.html).
 
 The normal map texture is licensed [CC0 from here](https://texturehaven.com/textures/).
+
+
